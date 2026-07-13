@@ -4,9 +4,9 @@ Tek dosyalık, tarayıcıda çalışan bir refleks oyunu. Kurulum yok, sunucu yo
 
 ## Nasıl oynanır?
 
-Merkezdeki yıldızın etrafında iki halka var ve orbun bu halkalardan birinde dönüyor.
+Merkezdeki yıldızın etrafında **üç halka** var ve orbun bu halkalardan birinde dönüyor.
 
-- **Ekrana dokun** (veya `Boşluk` tuşu) → orb iç ↔ dış halka arasında zıplar.
+- **Ekrana dokun** (veya `Boşluk` tuşu) → orb sırayla iç → orta → dış → iç halkaya geçer.
 - ⭐ **Yıldız** topla → puan + combo
 - 🌟 **Altın yıldız** → combo katlanır, ekstra puan
 - ☄️ **Asteroit**'e çarpma → oyun biter!

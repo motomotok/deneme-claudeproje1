@@ -74,11 +74,11 @@
   <div><div class="lbl">Puan</div><div class="val" id="scoreHud">0</div></div>
   <div class="right"><div class="lbl">Combo</div><div class="val" id="combo">x1</div></div>
 </div>
-<div class="hint" id="hint">DOKUN → halka değiştir</div>
+<div class="hint" id="hint">DOKUN → sonraki halka (iç→orta→dış)</div>
 
 <div class="overlay" id="startScreen">
   <h1>NEON<br>YÖRÜNGE</h1>
-  <div class="sub">Merkezdeki yıldızın etrafında dönüyorsun. Ekrana <b>dokununca</b> iç ↔ dış halka arasında zıplarsın.
+  <div class="sub">Merkezdeki yıldızın etrafında dönüyorsun. Ekrana <b>dokununca</b> üç halka arasında sırayla geçersin (iç → orta → dış → iç).
   Yıldızları topla, asteroitlerden kaç. Hız arttıkça combo katlanır!</div>
   <div class="legend">
     <div><span class="dot" style="color:#54e0ff"></span>Yıldız = puan</div>
@@ -109,10 +109,12 @@
     ctx.setTransform(DPR,0,0,DPR,0,0);
     CX = W/2; CY = H/2;
     const base = Math.min(W,H);
-    R_IN = base*0.22; R_OUT = base*0.36;
-    PLAYER_R = Math.max(9, base*0.022);
+    RINGS = [base*0.19, base*0.285, base*0.38];
+    PLAYER_R = Math.max(9, base*0.021);
   }
-  let R_IN, R_OUT, PLAYER_R;
+  let RINGS = [], PLAYER_R;
+  const NUM_RINGS = 3;
+  const MIN_GAP = 0.55; // aynı halkada boncuklar arası en az açı (radyan)
   window.addEventListener('resize', resize);
 
   // ---- audio (WebAudio, tek dosya, harici ses yok) ----
@@ -148,7 +150,7 @@
   best = +(localStorage.getItem('neonYorunge_best')||0);
 
   function reset(){
-    player = { ang:-Math.PI/2, ring:0, speed:1.6, targetRing:0, hopT:1 }; // ring 0=in,1=out
+    player = { ang:-Math.PI/2, targetRing:0, curRadius:radiusFor(0), speed:1.6 };
     items = [];
     particles = [];
     score = 0; combo = 1; spin = 1;
@@ -158,37 +160,40 @@
   }
 
   function spawnItem(atAng){
-    const ring = Math.random()<0.5?0:1;
     // difficulty ramps hazard chance
-    const hazChance = Math.min(0.45, 0.18 + elapsed*0.0009);
+    const hazChance = Math.min(0.42, 0.16 + elapsed*0.0008);
+    // üst üste gelmesin: boş bir halka+açı bul, bulamazsan bu tur atla
+    let ang, ring, tries = 0, ok = false;
+    do{
+      ring = Math.floor(Math.random()*NUM_RINGS);
+      ang = normAng(atAng!=null ? atAng : (player.ang + 1.5 + Math.random()*3.0));
+      ok = true;
+      for(const it of items){
+        if(!it.alive || it.expiring || it.ring!==ring) continue;
+        if(Math.abs(angDiff(it.ang, ang)) < MIN_GAP){ ok=false; break; }
+      }
+      tries++;
+    } while(!ok && tries<12);
+    if(!ok) return;
+
     let type;
     const r = Math.random();
     if(r < hazChance) type='hazard';
     else if(r < hazChance+0.12) type='gold';
     else type='star';
-    const ang = atAng!=null ? atAng : (player.ang + 1.4 + Math.random()*2.4);
-    items.push({ang:normAng(ang), ring, type, alive:true, pop:0, r:0});
+    items.push({ang, ring, type, alive:true, pop:0, expiring:false, prevFwd:null});
   }
 
   function normAng(a){ a%= (Math.PI*2); if(a<0) a+=Math.PI*2; return a; }
-  function radiusFor(ring){ return ring===0 ? R_IN : R_OUT; }
+  function radiusFor(ring){ return RINGS[ring]; }
 
-  function playerRadius(){
-    // smooth hop between rings
-    const from = radiusFor(player.ring);
-    const to = radiusFor(player.targetRing);
-    const t = easeOut(player.hopT);
-    return from + (to-from)*t;
-  }
+  function playerRadius(){ return player.curRadius; }
   function easeOut(t){ return 1-Math.pow(1-t,3); }
 
   function tap(){
     if(state===S.PLAY){
-      if(player.hopT>=1){
-        player.ring = player.targetRing;
-      }
-      player.targetRing = player.ring===0?1:0;
-      player.hopT = 0;
+      // sırayla: iç → orta → dış → iç ...
+      player.targetRing = (player.targetRing+1) % NUM_RINGS;
       beep(520,0.07,'triangle',0.10);
     }
   }
@@ -216,29 +221,40 @@
     elapsed += dt;
     // speed ramps up slowly
     player.speed = 1.5 + Math.min(2.4, elapsed*0.0011);
-    player.ang = normAng(player.ang + spin*player.speed*0.018*dt);
-    if(player.hopT<1){ player.hopT = Math.min(1, player.hopT + dt*0.10); }
+    player.ang = normAng(player.ang + player.speed*0.018*dt);
+
+    // orbu hedef halkaya doğru yumuşakça taşı
+    const tR = radiusFor(player.targetRing);
+    player.curRadius += (tR - player.curRadius) * Math.min(1, 0.22*dt);
+    const settled = Math.abs(player.curRadius - tR) < PLAYER_R*0.8;
+    const curRing = player.targetRing;
 
     // spawn
     spawnTimer -= dt;
     if(spawnTimer<=0){
       spawnItem();
-      spawnTimer = Math.max(16, 42 - elapsed*0.01);
+      spawnTimer = Math.max(15, 40 - elapsed*0.01);
     }
-
-    const pr = playerRadius();
-    const curRing = player.hopT<0.5?player.ring:player.targetRing;
-    const px = CX + Math.cos(player.ang)*pr;
-    const py = CY + Math.sin(player.ang)*pr;
 
     for(const it of items){
       if(!it.alive) continue;
-      if(it.pop<1) it.pop=Math.min(1,it.pop+dt*0.12);
-      // collision when player angle passes item angle on matching ring
-      let da = Math.abs(angDiff(player.ang, it.ang));
-      const sameRing = (it.ring===curRing) && player.hopT>0.35 || (it.ring===player.ring && it.ring===player.targetRing);
-      const onRing = it.ring===curRing;
-      if(da < 0.14 && onRing && player.hopT>0.45){
+      // büyüyerek beliriş
+      if(!it.expiring && it.pop<1) it.pop=Math.min(1,it.pop+dt*0.14);
+
+      // oyuncu bu boncuğun açısını geçti mi? (ileri mesafe birden 0→2π'ye sıçrar)
+      const fwd = normAng(it.ang - player.ang);
+      if(it.prevFwd!=null && (fwd - it.prevFwd) > Math.PI){ it.expiring = true; }
+      it.prevFwd = fwd;
+
+      // geçildiyse küçülerek kaybol
+      if(it.expiring){
+        it.pop -= dt*0.08;
+        if(it.pop<=0){ it.alive=false; continue; }
+      }
+
+      // çarpışma: aynı halkada, orb yerine oturmuşken ve açı yakınken
+      const da = Math.abs(angDiff(player.ang, it.ang));
+      if(!it.expiring && da<0.13 && it.ring===curRing && settled){
         it.alive=false;
         const ix = CX+Math.cos(it.ang)*radiusFor(it.ring);
         const iy = CY+Math.sin(it.ang)*radiusFor(it.ring);
@@ -260,20 +276,11 @@
         }
       }
     }
-    // cull passed items (behind player, out of reach)
-    items = items.filter(it=>{
-      if(!it.alive){ return false; }
-      const behind = angDiff(player.ang, it.ang);
-      // remove if player has swept well past it (missed) — reset combo on missed star? keep gentle
-      if(spin>0 && behind> 0.9 && behind<2.4){ /* still visible */ }
-      return true;
-    });
-    // keep item list bounded
-    if(items.length>26) items.splice(0, items.length-26);
+    items = items.filter(it=>it.alive);
+    if(items.length>30) items.splice(0, items.length-30);
 
     document.getElementById('scoreHud').textContent = score;
-    const cEl=document.getElementById('combo');
-    cEl.textContent = 'x'+combo;
+    document.getElementById('combo').textContent = 'x'+combo;
 
     if(shake>0) shake*=Math.pow(0.86,dt);
     if(flash>0) flash=Math.max(0,flash-dt*0.06);
@@ -317,15 +324,14 @@
     ctx.fillStyle='#eaffff'; ctx.beginPath(); ctx.arc(CX,CY,sunR,0,7); ctx.fill();
 
     // rings
-    drawRing(R_IN);
-    drawRing(R_OUT);
+    for(const r of RINGS) drawRing(r);
 
     // items
     for(const it of items){
       if(!it.alive) continue;
       const rad = radiusFor(it.ring);
       const x=CX+Math.cos(it.ang)*rad, y=CY+Math.sin(it.ang)*rad;
-      const sc = easeOut(it.pop);
+      const sc = easeOut(Math.max(0,it.pop));
       drawItem(x,y,it.type,sc,t);
     }
 
