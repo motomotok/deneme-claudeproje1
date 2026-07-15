@@ -13,6 +13,7 @@ Merkezdeki yıldızın etrafında **üç halka** var ve orbun bu halkalardan bir
 - Uçlarda (en iç/en dış) fazladan dokunma bir şey yapmaz — sınır orada kilitlenir.
 - Halkalar arası geçerken çarpışmazsın — kaçış hamlen!
 - ⭐ Yıldız, 🌟 altın yıldız, 💎 elmas → puan + combo
+- 🪙 Yıldız tozu jetonu → mağaza parası
 - ☄️ Asteroit / gezici asteroit / bomba asteroit → can gider
 
 ## 🎮 Oyun Modları
@@ -28,27 +29,38 @@ Klasik ve Zaman Yarışı modlarında **Kolay / Normal / Zor** zorluk seçilebil
 
 ## ✨ Özellikler
 
-- 🏠 Çok ekranlı menü: Ana Menü, Mod Seç, Nasıl Oynanır, Ayarlar, İstatistikler
+- 🏠 Çok ekranlı menü: Ana Menü, Mod Seç, 🛒 Mağaza, Nasıl Oynanır, Ayarlar, İstatistikler
 - ❤️ Can sistemi + çarpışma sonrası kısa dokunulmazlık
 - 🎁 6 güç-yükseltmesi: 🛡️ Kalkan, ⏱️ Yavaşlatma, 🧲 Mıknatıs, ⏳ Zaman Dondurma, 💰 Puan Çarpanı (x2), 👻 Hayalet
 - 👾 3 asteroit türü: klasik, gezici (halka değiştiren), bomba (büyük çarpışma alanı)
 - 💎 Nadir elmas koleksiyonu
-- 🔄 Çift dokunuşla yön değiştirme
 - 🔥 5 combo'da bir "STREAK" bonusu + yavaş çekim efekti
 - 📈 Seviye ilerlemesi, hızlanan tempo, "SEVİYE UP" efekti
-- 🎨 4 tema (Neon, Gün Batımı, Matrix, Buz)
-- 🎭 5 kilit açılabilir orb rengi (başarımlarla açılır)
-- 🏆 10 başarım, 📅 günlük görev sistemi
+- 🏆 10 başarım (her biri yıldız tozu ödülü verir), 📅 günlük görev sistemi
 - 🏅 Yerel liderlik tablosu (en iyi 5 skor)
 - 📤 Skor paylaşma (Web Share API / panoya kopyalama)
 - 📳 Titreşim geri bildirimi (Android'de çalışır; iOS Safari Vibration API'yi desteklemez)
 - 🌠 Kayan yıldızlar, ekran sarsıntısı, parçacık efektleri
 - ⏸️ Duraklat/Devam
 - ♿ Erişilebilirlik: Büyük Butonlar, Sol El Modu, Renk Körü Dostu Simgeler
-- ⚙️ Ayarlar: ses aç/kapa, tema, orb rengi (hepsi kaydedilir)
 - 📲 **PWA**: ana ekrana eklenebilir, uygulama gibi tam ekran açılır, ilk ziyaretten sonra çevrimdışı çalışır
 
-Tüm ilerleme ve ayarlar tarayıcında (`localStorage`) saklanır.
+Tüm ilerleme, satın alımlar ve ayarlar tarayıcında (`localStorage`) saklanır.
+
+## 🪙 Yıldız Tozu & Kozmik Mağaza
+
+Oyun içinde beliren bakır-altın **yıldız tozu jetonlarını** topla; ayrıca her oyun sonunda puanına göre bonus kazanırsın, başarım açtıkça ekstra ödül gelir. Ana menüden **🛒 MAĞAZA**'ya gidip 6 kategoride harca:
+
+| Kategori | İçerik | Kilitlenme |
+|----------|--------|------------|
+| 🎨 Temalar | 4 ücretsiz + 3 premium (Vaporwave, Altın Çağ, Kara Madde) | Ücretsiz / Yıldız tozu |
+| 🔮 Orb Skinleri | 5 başarımla açılan + 5 satın alınabilir (biri gökkuşağı efektli "Prizma") | Başarım / Yıldız tozu |
+| ✨ İz Efektleri | Klasik, Kıvılcım, Kuyruklu Yıldız, Gökkuşağı, Piksel, Kurdele | Yıldız tozu |
+| ☀️ Güneş Skinleri | Klasik, Kızıl Dev, Kara Delik, Nebula, Kristal Çekirdek | Yıldız tozu |
+| 💫 Halka Stilleri | Klasik, Noktalı, Parlak, Çift Çizgi | Yıldız tozu |
+| 🚀 Başlangıç Takviyeleri | Kalkanla Başla, Yavaş Açılış, Şanslı Açılış, Toz Rüzgarı — tek kullanımlık, Mod Seç ekranından oyuna başlamadan önce takılır | Yıldız tozu (tüketilebilir, birden fazla alınabilir) |
+
+Satın aldığın kozmetikler kalıcı olarak takılır (equip); takviyeler ise envanterine eklenir ve bir sonraki oyunda tek seferlik kullanılır.
 
 ## Kontroller
 
