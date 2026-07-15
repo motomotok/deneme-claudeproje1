@@ -173,7 +173,7 @@
   <button id="pauseBtn">⏸</button>
 </div>
 <div id="levelFlash"></div>
-<div class="hint" id="hint">DOKUN → sonraki halka · ÇİFT DOKUN → yön değiştir</div>
+<div class="hint" id="hint">SOL → iç halka &nbsp;·&nbsp; SAĞ → dış halka</div>
 
 <div id="overlay">
 
@@ -212,7 +212,7 @@
     <h2>Nasıl Oynanır</h2>
     <div class="card">
       <b>🎯 Amaç:</b> Merkezdeki yıldızın etrafında dönerken yıldızları topla, asteroitlerden kaç.<br><br>
-      <b>👆 Kontrol:</b> Ekrana <b>dokun</b> → sıradaki halkaya geç. <b>Çift dokun</b> → dönüş yönünü tersine çevir. Halka geçerken çarpışmazsın, bu senin kaçış hamlen!
+      <b>👆 Kontrol:</b> Ekran ikiye bölünür. <b>Sağ tarafa dokun</b> → dış halkaya geç. <b>Sol tarafa dokun</b> → iç halkaya geç. Halka geçerken çarpışmazsın, bu senin kaçış hamlen!
     </div>
     <div class="legend">
       <div><span class="dot" style="color:var(--star)"></span>Yıldız</div>
@@ -343,9 +343,9 @@
   function saveStats(){ try{ localStorage.setItem('neonYorungeStats', JSON.stringify(stats)); }catch(e){} }
 
   const DIFF = {
-    easy:{label:'Kolay', lives:4, hazBase:0.12, hazRamp:0.0006, hazCap:0.34, speedRamp:0.0009},
-    normal:{label:'Normal', lives:3, hazBase:0.16, hazRamp:0.0008, hazCap:0.42, speedRamp:0.0011},
-    hard:{label:'Zor', lives:2, hazBase:0.22, hazRamp:0.0011, hazCap:0.50, speedRamp:0.0014},
+    easy:{label:'Kolay', lives:4, hazBase:0.06, hazRamp:0.0003, hazCap:0.17, speedRamp:0.0009},
+    normal:{label:'Normal', lives:3, hazBase:0.08, hazRamp:0.0004, hazCap:0.21, speedRamp:0.0011},
+    hard:{label:'Zor', lives:2, hazBase:0.11, hazRamp:0.00055, hazCap:0.25, speedRamp:0.0014},
   };
   let diffCfg = DIFF.normal;
 
@@ -455,7 +455,7 @@
   const GAME_STATES = {play:1, pause:1, over:1};
   let mode='classic', diffKey='normal';
   let player, items, particles, score, combo, lives, level, elapsed, spawnTimer, shake, flash, freezeFlash;
-  let levelFlashT, session, timeLeft, spin, newRecord, lastTapAt, timeScale, timeScaleT, ringDir;
+  let levelFlashT, session, timeLeft, newRecord, timeScale, timeScaleT;
 
   const SLOW_DUR=300, MAGNET_DUR=360, INVUL=95, FREEZE_DUR=150, MULT_DUR=360, GHOST_DUR=240;
   const PW = ['shield','slow','magnet','freeze','mult','ghost'];
@@ -469,7 +469,7 @@
     level=1; elapsed=0; spawnTimer=0; shake=0; flash=0; freezeFlash=0; levelFlashT=0;
     session = {stars:0, golds:0, diamonds:0, magnets:0, hits:0, shieldSaved:false, streakMax:0};
     timeLeft = mode==='time' ? 60 : null;
-    spin=1; newRecord=false; lastTapAt=0; timeScale=1; timeScaleT=0; ringDir=1;
+    newRecord=false; timeScale=1; timeScaleT=0;
     for(let i=0;i<4;i++) spawnItem(player.ang + 1.4 + i*0.95);
     updateHud();
   }
@@ -508,21 +508,12 @@
       jumpT: type==='hazardJump' ? 70+Math.random()*60 : 0});
   }
 
-  function tap(){
-    const now = performance.now();
-    if(now-lastTapAt < 300){
-      spin*=-1; lastTapAt=0;
-      const px=CX+Math.cos(player.ang)*player.curRadius, py=CY+Math.sin(player.ang)*player.curRadius;
-      burst(px,py,'#ffffff',16,4);
-      beep(300,0.15,'sawtooth',0.12); beep(500,0.15,'sawtooth',0.1);
-      showFlash(spin>0?'İLERİ →':'← GERİ',40);
-      return;
-    }
-    lastTapAt=now;
-    let next = player.targetRing + ringDir;
-    if(next > NUM_RINGS-1 || next < 0){ ringDir*=-1; next = player.targetRing + ringDir; }
+  function tap(x){
+    const goOut = x >= W/2;
+    const next = player.targetRing + (goOut ? 1 : -1);
+    if(next < 0 || next > NUM_RINGS-1) return;
     player.targetRing = next;
-    beep(520,0.07,'triangle',0.10);
+    beep(goOut?620:420,0.07,'triangle',0.10);
   }
 
   function burst(x,y,color,n,spd){
@@ -554,7 +545,7 @@
     let speedMul = 1;
     if(player.freezeT>0) speedMul=0.04; else if(player.slowT>0) speedMul=0.5;
     player.speed = 1.5 + (zen?0:Math.min(2.4, elapsed*diffCfg.speedRamp));
-    player.ang = normAng(player.ang + spin*player.speed*speedMul*0.018*dt*timeScale);
+    player.ang = normAng(player.ang + player.speed*speedMul*0.018*dt*timeScale);
 
     const tR=radiusFor(player.targetRing);
     player.curRadius += (tR-player.curRadius)*Math.min(1,0.22*dt);
@@ -730,7 +721,7 @@
     const px=CX+Math.cos(player.ang)*pr, py=CY+Math.sin(player.ang)*pr;
     const pc = playerColor();
     for(let i=1;i<=10;i++){
-      const a=player.ang - spin*i*0.05;
+      const a=player.ang - i*0.05;
       const tx=CX+Math.cos(a)*pr, ty=CY+Math.sin(a)*pr;
       ctx.globalAlpha=(1-i/10)*0.4; ctx.fillStyle=pc;
       ctx.beginPath(); ctx.arc(tx,ty,PLAYER_R*(1-i/14),0,7); ctx.fill();
@@ -1008,13 +999,16 @@
 
   window.addEventListener('pointerdown', e=>{
     if(e.target.closest('button, .theme, .sw, .modeCard, .diffChip, .skinDot')) return;
-    if(state==='play'){ e.preventDefault(); tap(); }
+    if(state==='play'){ e.preventDefault(); tap(e.clientX); }
   }, {passive:false});
   window.addEventListener('keydown', e=>{
-    if(e.code==='Space'){
+    if(e.code==='ArrowRight' || e.code==='KeyD'){
+      if(state==='play') tap(W);
+    } else if(e.code==='ArrowLeft' || e.code==='KeyA'){
+      if(state==='play') tap(0);
+    } else if(e.code==='Space'){
       e.preventDefault();
-      if(state==='play') tap();
-      else if(state==='menu') goMode();
+      if(state==='menu') goMode();
       else if(state==='over') startGame();
       else if(state==='pause') resumeGame();
     } else if(e.code==='KeyP' || e.code==='Escape'){

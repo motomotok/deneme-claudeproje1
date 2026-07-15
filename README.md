@@ -6,10 +6,11 @@ Tek dosyalık, tarayıcıda çalışan bir refleks/arcade oyunu. Kurulum yok, su
 
 ## Nasıl oynanır?
 
-Merkezdeki yıldızın etrafında **üç halka** var ve orbun bu halkalardan birinde dönüyor.
+Merkezdeki yıldızın etrafında **üç halka** var ve orbun bu halkalardan birinde dönüyor. Ekran ikiye bölünür:
 
-- **Ekrana dokun** → orb sırayla iç → orta → dış → iç halkaya geçer.
-- **Çift dokun** → dönüş yönünü tersine çevirir.
+- **Sağ tarafa dokun** → dış halkaya geç.
+- **Sol tarafa dokun** → iç halkaya geç.
+- Uçlarda (en iç/en dış) fazladan dokunma bir şey yapmaz — sınır orada kilitlenir.
 - Halkalar arası geçerken çarpışmazsın — kaçış hamlen!
 - ⭐ Yıldız, 🌟 altın yıldız, 💎 elmas → puan + combo
 - ☄️ Asteroit / gezici asteroit / bomba asteroit → can gider
@@ -53,9 +54,11 @@ Tüm ilerleme ve ayarlar tarayıcında (`localStorage`) saklanır.
 
 | Girdi | Etki |
 |-------|------|
-| Dokunma / sol tık | Sonraki halkaya geç |
-| Çift dokunma | Dönüş yönünü değiştir |
-| `Boşluk` | Bağlama göre: mod seç / halka değiştir / tekrar oyna / devam et |
+| Sağ yarıya dokun / tık | Dış halkaya geç |
+| Sol yarıya dokun / tık | İç halkaya geç |
+| `→` / `D` | Dış halkaya geç |
+| `←` / `A` | İç halkaya geç |
+| `Boşluk` | Bağlama göre: mod seç / tekrar oyna / devam et |
 | `P` veya `Esc` | Duraklat / devam |
 
 ## iPad'de ana ekrana ekleme
