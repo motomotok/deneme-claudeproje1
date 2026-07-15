@@ -455,7 +455,7 @@
   const GAME_STATES = {play:1, pause:1, over:1};
   let mode='classic', diffKey='normal';
   let player, items, particles, score, combo, lives, level, elapsed, spawnTimer, shake, flash, freezeFlash;
-  let levelFlashT, session, timeLeft, spin, newRecord, lastTapAt, timeScale, timeScaleT;
+  let levelFlashT, session, timeLeft, spin, newRecord, lastTapAt, timeScale, timeScaleT, ringDir;
 
   const SLOW_DUR=300, MAGNET_DUR=360, INVUL=95, FREEZE_DUR=150, MULT_DUR=360, GHOST_DUR=240;
   const PW = ['shield','slow','magnet','freeze','mult','ghost'];
@@ -469,7 +469,7 @@
     level=1; elapsed=0; spawnTimer=0; shake=0; flash=0; freezeFlash=0; levelFlashT=0;
     session = {stars:0, golds:0, diamonds:0, magnets:0, hits:0, shieldSaved:false, streakMax:0};
     timeLeft = mode==='time' ? 60 : null;
-    spin=1; newRecord=false; lastTapAt=0; timeScale=1; timeScaleT=0;
+    spin=1; newRecord=false; lastTapAt=0; timeScale=1; timeScaleT=0; ringDir=1;
     for(let i=0;i<4;i++) spawnItem(player.ang + 1.4 + i*0.95);
     updateHud();
   }
@@ -519,7 +519,9 @@
       return;
     }
     lastTapAt=now;
-    player.targetRing=(player.targetRing+1)%NUM_RINGS;
+    let next = player.targetRing + ringDir;
+    if(next > NUM_RINGS-1 || next < 0){ ringDir*=-1; next = player.targetRing + ringDir; }
+    player.targetRing = next;
     beep(520,0.07,'triangle',0.10);
   }
 
