@@ -79,11 +79,21 @@ Safari'de siteyi aç → Paylaş (□↑) → **"Ana Ekrana Ekle"**. Artık simg
 
 ## Çalıştırma
 
-`index.html` dosyasına çift tıkla — bu kadar. Ya da GitHub Pages ile yayında oyna (yukarıdaki link).
+`www/index.html` dosyasına çift tıkla — bu kadar. Ya da GitHub Pages ile yayında oyna (yukarıdaki link).
+
+## Android uygulaması
+
+Proje Capacitor ile gerçek bir Android uygulamasına paketlenebiliyor; reklamlarla
+(geçiş reklamı + ödüllü reklam + "izle, coin kazan") para kazanma altyapısı kurulu.
+Kurulum, build ve AdMob/Play Console hesap adımları için bkz. [MOBILE_APP.md](MOBILE_APP.md).
+
+## Gizlilik ve Lisans
+
+[Gizlilik Politikası / KVKK](www/privacy.html) · [Açık Kaynak Lisansları](www/licenses.html) · [Telif Hakkı](LICENSE)
 
 ## Teknik
 
-- Saf HTML + CSS + JavaScript (harici kütüphane yok)
+- Saf HTML + CSS + JavaScript (harici kütüphane yok), oyun mantığı `www/game/*.js` altında modüllere ayrılmış
 - Canvas 2D ile çizim, WebAudio ile sesler, Vibration API ile titreşim
 - `mulberry32` seeded RNG ile günlük mod herkese aynı düzeni sunar
 - Basit bir durum makinesiyle ekran yönetimi

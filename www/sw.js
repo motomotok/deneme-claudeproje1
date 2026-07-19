@@ -1,8 +1,21 @@
-const CACHE = 'neon-yorunge-v1';
+const CACHE = 'neon-yorunge-v3';
 const ASSETS = [
   './',
   './index.html',
+  './style.css',
   './manifest.webmanifest',
+  './ads.js',
+  './native-ads-bundle.js',
+  './privacy.html',
+  './licenses.html',
+  './game/data.js',
+  './game/fx.js',
+  './game/engine.js',
+  './game/render.js',
+  './game/screens.js',
+  './game/shop-ui.js',
+  './game/input.js',
+  './game/main.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-180.png',

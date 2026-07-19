@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Neon Yörünge</string>
+    <string name="title_activity_main">Neon Yörünge</string>
+    <string name="package_name">com.motomotok.neonyorunge</string>
+    <string name="custom_url_scheme">com.motomotok.neonyorunge</string>
+</resources>

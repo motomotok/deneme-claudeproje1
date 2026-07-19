@@ -1,0 +1,15 @@
+{
+  "appId": "com.motomotok.neonyorunge",
+  "appName": "Neon Yörünge",
+  "webDir": "www",
+  "backgroundColor": "#05060f",
+  "android": {
+    "backgroundColor": "#05060f"
+  },
+  "plugins": {
+    "AdMob": {
+      "requestTrackingAuthorization": false,
+      "initializeForTesting": true
+    }
+  }
+}

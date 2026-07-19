@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05060f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>Neon Yörünge</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="toast"></div>
+
+<div id="hud">
+  <div class="hudTop">
+    <div><div class="lbl">Puan</div><div class="val" id="scoreHud">0</div>
+      <div id="lives">❤❤❤</div></div>
+    <div class="center">
+      <div class="lbl" id="levelLbl">Seviye</div><div class="val" id="levelHud">1</div>
+      <div class="lbl" id="timerLbl" style="display:none">Süre</div><div class="val" id="timerHud" style="display:none">60</div>
+    </div>
+    <div style="text-align:right"><div class="lbl">Combo</div><div class="val" id="combo">x1</div></div>
+  </div>
+  <div id="pw"></div>
+  <button id="pauseBtn">⏸</button>
+  <div id="walletChip">🪙 <span id="walletHud">0</span></div>
+</div>
+<div id="levelFlash"></div>
+<div class="hint" id="hint">SOL → iç halka &nbsp;·&nbsp; SAĞ → dış halka</div>
+
+<div id="overlay">
+
+  <div class="screen active" id="screen-menu">
+    <h1>NEON<br>YÖRÜNGE</h1>
+    <div class="sub">Halkalar arasında dans et, yıldızları topla, evreni geç.</div>
+    <div class="walletBig">🪙 <span id="menuWallet">0</span></div>
+    <div class="col">
+      <button class="btn" data-go="mode">▶ OYNA</button>
+      <button class="btn alt small" data-go="shop">🛒 MAĞAZA</button>
+      <button class="btn alt small" data-go="howto">NASIL OYNANIR</button>
+      <button class="btn alt small" data-go="settings">AYARLAR</button>
+      <button class="btn alt small" data-go="stats">İSTATİSTİKLER</button>
+    </div>
+    <div class="muted" id="menuBest">En iyi: 0</div>
+    <div class="muted" id="questLine">🎯 Günün görevi: —</div>
+  </div>
+
+  <div class="screen" id="screen-mode">
+    <h2>Mod Seç</h2>
+    <div class="modeGrid" id="modeGrid">
+      <div class="modeCard sel" data-mode="classic"><div class="mi">🌌</div><div class="mn">Klasik</div><div class="md">Canlarla sonsuz mod</div></div>
+      <div class="modeCard" data-mode="time"><div class="mi">⏱️</div><div class="mn">Zaman Yarışı</div><div class="md">60 sn'de en yüksek skor</div></div>
+      <div class="modeCard" data-mode="zen"><div class="mi">🧘</div><div class="mn">Zen</div><div class="md">Asteroit yok, sadece topla</div></div>
+      <div class="modeCard" data-mode="daily"><div class="mi">📅</div><div class="mn">Günlük</div><div class="md" id="dailyStatus">Herkes aynı düzen, tek deneme</div></div>
+    </div>
+    <div class="sub">Zorluk</div>
+    <div class="diffRow" id="diffRow">
+      <div class="diffChip" data-diff="easy">Kolay</div>
+      <div class="diffChip sel" data-diff="normal">Normal</div>
+      <div class="diffChip" data-diff="hard">Zor</div>
+    </div>
+    <div class="sub" style="margin-top:2px">Takviye <span style="opacity:.6">(mağazadan satın al)</span></div>
+    <div class="row2" id="boostRow"></div>
+    <button class="btn" id="modeStartBtn">▶ BAŞLA</button>
+    <button class="btn alt small" data-go="menu">◀ Geri</button>
+  </div>
+
+  <div class="screen" id="screen-howto">
+    <h2>Nasıl Oynanır</h2>
+    <div class="card">
+      <b>🎯 Amaç:</b> Merkezdeki yıldızın etrafında dönerken yıldızları topla, asteroitlerden kaç.<br><br>
+      <b>👆 Kontrol:</b> Ekran ikiye bölünür. <b>Sağ tarafa dokun</b> → dış halkaya geç. <b>Sol tarafa dokun</b> → iç halkaya geç. Halka geçerken çarpışmazsın, bu senin kaçış hamlen!
+    </div>
+    <div class="legend">
+      <div><span class="dot" style="color:var(--star)"></span>Yıldız</div>
+      <div><span class="dot" style="color:var(--gold)"></span>Altın</div>
+      <div><span class="dot" style="color:#eafcff"></span>Elmas</div>
+      <div><span class="dot" style="color:var(--peril)"></span>Asteroit</div>
+    </div>
+    <div class="card">
+      <b>Güç-yükseltmeleri:</b><br>
+      🛡️ Kalkan — bir çarpışmayı emer &nbsp; ⏱️ Yavaşlatma — orbu yavaşlatır<br>
+      🧲 Mıknatıs — yıldızları çeker &nbsp; ⏳ Zaman Dondurma — orbu neredeyse durdurur<br>
+      💰 Çarpan — puanları 2 katına çıkarır &nbsp; 👻 Hayalet — geçici dokunulmazlık
+    </div>
+    <div class="sub">Mod Seç ekranından Klasik / Zaman Yarışı / Zen / Günlük modları ve zorluk seç.</div>
+    <div class="card">
+      🪙 <b>Yıldız Tozu:</b> Oyun içinde beliren bakır-altın renkli jetonları topla. Ayrıca her oyun sonunda puanına göre bonus yıldız tozu kazanırsın. 🛒 <b>Kozmik Mağaza'</b>dan temalar, orb renkleri, iz efektleri, güneş görünümleri, halka stilleri ve tek kullanımlık başlangıç takviyeleri satın alabilirsin.
+    </div>
+    <button class="btn alt small" data-go="menu">◀ Geri</button>
+  </div>
+
+  <div class="screen" id="screen-settings">
+    <h2>Ayarlar</h2>
+    <div class="toggle">Ses <div class="sw" id="soundSw"></div></div>
+    <div class="toggle">Büyük Butonlar <div class="sw" id="bigSw"></div></div>
+    <div class="toggle">Sol El Modu <div class="sw" id="handSw"></div></div>
+    <div class="toggle">Renk Körü Dostu Simgeler <div class="sw" id="cbSw"></div></div>
+    <div class="sub" style="margin-top:4px">Tema</div>
+    <div class="themes" id="themeGrid"></div>
+    <div class="sub" style="margin-top:4px">Orb Rengi</div>
+    <div id="skinGrid"></div>
+    <div class="sub" style="margin-top:4px">Gizlilik &amp; Yasal</div>
+    <div class="col">
+      <button class="btn alt small" id="privacyBtn">🔒 Gizlilik Politikası</button>
+      <button class="btn alt small" id="adConsentBtn">📋 Reklam Onayını Yönet</button>
+      <button class="btn alt small" id="licensesBtn">📄 Açık Kaynak Lisansları</button>
+    </div>
+    <button class="btn alt small" data-go="menu">◀ Geri</button>
+  </div>
+
+  <div class="screen" id="screen-stats">
+    <h2>İstatistikler</h2>
+    <div class="card">
+      <div class="row"><span class="k">🏆 En iyi skor</span><span class="v" id="stBest">0</span></div>
+      <div class="row"><span class="k">⭐ Toplam yıldız</span><span class="v" id="stStars">0</span></div>
+      <div class="row"><span class="k">🎮 Oynanan oyun</span><span class="v" id="stGames">0</span></div>
+      <div class="row"><span class="k">📈 En yüksek seviye</span><span class="v" id="stLevel">1</span></div>
+    </div>
+    <div class="card" id="achCard"><b>🏆 Başarımlar (<span id="achCount">0</span>/10)</b>
+      <div class="achGrid" id="achGrid"></div>
+    </div>
+    <div class="card" id="lbCard"><b>🏅 En İyi 5</b><div id="lbList"></div></div>
+    <button class="btn alt small" id="resetStats">İstatistikleri Sıfırla</button>
+    <button class="btn alt small" data-go="menu">◀ Geri</button>
+  </div>
+
+  <div class="screen" id="screen-shop">
+    <h2>🛒 Kozmik Mağaza</h2>
+    <div class="walletBig">🪙 <span id="shopWallet">0</span></div>
+    <button class="btn alt small" id="watchAdCoinsShopBtn">🎬 Reklam İzle (+25 🪙)</button>
+    <div class="shopTabs" id="shopTabs">
+      <div class="stab sel" data-tab="themes">Temalar</div>
+      <div class="stab" data-tab="skins">Orblar</div>
+      <div class="stab" data-tab="trails">İzler</div>
+      <div class="stab" data-tab="suns">Güneşler</div>
+      <div class="stab" data-tab="rings">Halkalar</div>
+      <div class="stab" data-tab="boosts">Takviyeler</div>
+    </div>
+    <div class="shopGrid" id="shopGrid"></div>
+    <button class="btn alt small" data-go="menu">◀ Geri</button>
+  </div>
+
+  <div class="screen" id="screen-pause">
+    <h2>Duraklatıldı</h2>
+    <div class="col">
+      <button class="btn" id="resumeBtn">▶ DEVAM</button>
+      <button class="btn alt small" id="zenFinishBtn" style="display:none">🏁 Oturumu Bitir</button>
+      <button class="btn alt small" data-go="menu">ANA MENÜ</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-revive">
+    <h2>💔 Son Şansın</h2>
+    <div class="sub">Reklam izleyip <b>1 canla</b> devam edebilirsin.<br>(<span id="reviveCountdown">6</span> sn içinde seç)</div>
+    <div class="col">
+      <button class="btn" id="reviveWatchBtn">📺 İzle ve Devam Et</button>
+      <button class="btn alt small" id="reviveSkipBtn">Vazgeç</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-over">
+    <div id="recordBadge"></div>
+    <div class="muted">SKOR</div>
+    <div class="score" id="finalScore">0</div>
+    <div class="muted" id="overStats">En iyi: 0 · Seviye 1</div>
+    <div class="walletBig" style="font-size:16px;padding:6px 16px;" id="coinsEarned">🪙 +0</div>
+    <div class="col">
+      <button class="btn" id="retryBtn">↻ TEKRAR</button>
+      <button class="btn alt small" id="watchAdCoinsBtn">🎬 Reklam İzle (+25 🪙)</button>
+      <div class="row2">
+        <button class="btn alt small" id="shareBtn">📤 Paylaş</button>
+        <button class="btn alt small" data-go="menu">ANA MENÜ</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="native-ads-bundle.js"></script>
+<script src="ads.js"></script>
+<script src="game/data.js"></script>
+<script src="game/fx.js"></script>
+<script src="game/engine.js"></script>
+<script src="game/render.js"></script>
+<script src="game/screens.js"></script>
+<script src="game/shop-ui.js"></script>
+<script src="game/input.js"></script>
+<script src="game/main.js"></script>
+</body>
+</html>
