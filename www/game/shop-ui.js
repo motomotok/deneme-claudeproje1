@@ -90,11 +90,29 @@ function purchase(category, item){
   beep(700,0.1,'sine',0.13); beep(1000,0.1,'triangle',0.12);
   return true;
 }
+
+let pendingPurchase = null;
+function showPurchaseConfirm(icon, name, price, onYes){
+  pendingPurchase = onYes;
+  document.getElementById('pcIcon').textContent = icon;
+  document.getElementById('pcName').textContent = name;
+  document.getElementById('pcPrice').textContent = '🪙 '+price;
+  document.getElementById('purchaseConfirmOverlay').style.display = 'flex';
+  beep(500,0.05,'sine',0.08);
+}
+function hidePurchaseConfirm(){
+  document.getElementById('purchaseConfirmOverlay').style.display = 'none';
+  pendingPurchase = null;
+}
+
 function onShopCardClick(category, item){
   const unlocked = isUnlockedItem(category, item);
   if(!unlocked){
     if(item.gate.type==='coin'){
-      if(purchase(category,item)) setEquipped(category, item.id);
+      showPurchaseConfirm('🎨', item.name, item.gate.price, ()=>{
+        if(purchase(category,item)) setEquipped(category, item.id);
+        renderSkins(); renderThemeGrid(); syncShopIfOpen();
+      });
     } else {
       const ach=ACHIEVEMENTS.find(a=>a.id===item.gate.id);
       queueToast('🔒 '+item.name+' kilitli: '+(ach?ach.desc:''));
@@ -103,8 +121,8 @@ function onShopCardClick(category, item){
   } else {
     setEquipped(category, item.id);
     beep(600,0.06,'sine',0.1);
+    renderSkins(); renderThemeGrid(); syncShopIfOpen();
   }
-  renderSkins(); renderThemeGrid(); syncShopIfOpen();
 }
 function syncShopIfOpen(){ if(state==='shop') renderShopTab(); }
 
@@ -168,9 +186,11 @@ function renderBoostsShop(){
     card.innerHTML = `<div class="boostIcon">${b.icon}</div><div class="cn">${b.name}</div><div class="bdesc">${b.desc}</div><div class="price">🪙 ${b.price}</div><div class="ownedTag">Envanter: ${owned}</div>`;
     card.addEventListener('click', ()=>{
       if(stats.stardust<b.price){ queueToast('🪙 Yetersiz Yıldız Tozu'); beep(200,0.1,'square',0.1); return; }
-      stats.stardust-=b.price; stats.boosts[b.id]=(stats.boosts[b.id]||0)+1; saveStats(); refreshWallet();
-      queueToast('✅ '+b.name+' envantere eklendi'); beep(700,0.1,'sine',0.13); beep(1000,0.1,'triangle',0.12);
-      renderBoostsShop();
+      showPurchaseConfirm(b.icon, b.name, b.price, ()=>{
+        stats.stardust-=b.price; stats.boosts[b.id]=(stats.boosts[b.id]||0)+1; saveStats(); refreshWallet();
+        queueToast('✅ '+b.name+' envantere eklendi'); beep(700,0.1,'sine',0.13); beep(1000,0.1,'triangle',0.12);
+        renderBoostsShop();
+      });
     });
     grid.appendChild(card);
   });

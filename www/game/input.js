@@ -51,6 +51,13 @@ document.getElementById('resetStats').addEventListener('click', ()=>{
     dailyDate:'',dailyDone:false,dailyScore:0,dailyCount:0,questDate:'',questId:'',questDone:false};
   saveStats(); syncStats(); beep(300,0.15,'square',0.12);
 });
+document.getElementById('pcYesBtn').addEventListener('click', e=>{ e.stopPropagation();
+  const cb=pendingPurchase; hidePurchaseConfirm(); if(cb) cb();
+});
+document.getElementById('pcNoBtn').addEventListener('click', e=>{ e.stopPropagation(); hidePurchaseConfirm(); beep(300,0.06,'sine',0.08); });
+document.getElementById('purchaseConfirmOverlay').addEventListener('click', e=>{
+  if(e.target.id==='purchaseConfirmOverlay') hidePurchaseConfirm();
+});
 document.getElementById('privacyBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('privacy.html','_blank'); });
 document.getElementById('licensesBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('licenses.html','_blank'); });
 document.getElementById('adConsentBtn').addEventListener('click', e=>{ e.stopPropagation(); Ads.showPrivacyOptions(); });
