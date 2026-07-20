@@ -76,24 +76,40 @@ ile bırakmak en güvenlisi.
 ## 2) Google Play Console hesabı ($25, tek seferlik)
 
 1. https://play.google.com/console adresinden geliştirici hesabı aç ($25 tek seferlik ücret).
-2. Yeni uygulama oluştur, mağaza listeleme bilgilerini doldur (README.md'deki açıklamalar,
-   özellik listesi ve `www/icons/icon-512.png` bu iş için kullanılabilir — Play Store 512×512 ikon ister).
-3. İçerik derecelendirmesi anketini doldur, gizlilik politikası URL'si ekle (reklam SDK'sı
+2. **Kimlik doğrulama**: Google, yeni bireysel hesaplardan T.C. kimlik/pasaport ile kimlik
+   doğrulaması istiyor — bu birkaç gün sürebilir, $25 ödemesinden ayrı bir adım.
+3. Yeni uygulama oluştur, mağaza listeleme bilgilerini doldur — **hazır metinler ve görseller
+   için `STORE_LISTING.md` ve `store-assets/` klasörüne bak**, hepsi kopyala-yapıştıra hazır.
+4. İçerik derecelendirmesi anketini doldur, gizlilik politikası URL'si ekle (reklam SDK'sı
    kullanıldığı için "reklam gösteriyor" ve "veri toplama" beyanları gerekiyor — Play Console
-   bu formu adım adım yönlendirir).
+   bu formu adım adım yönlendirir; hazır cevaplar için aşağıdaki "Data Safety formu" bölümüne bak).
+
+### ⚠️ Kapalı test (closed testing) zorunluluğu
+Google, 2023'ten beri **yeni bireysel geliştirici hesaplarının** uygulamayı herkese açık
+yayına (production) almadan önce en az **12 test kullanıcısıyla, kesintisiz 14 gün** kapalı
+test yapmasını şart koşuyor. Bunu atlayamazsın. Pratikte:
+1. Play Console'da bir "Closed testing" track'i oluştur, `app-release.aab`'ı oraya yükle.
+2. En az 12 kişinin e-postasını (arkadaş/aile) test listesine ekle, onlara katılım linkini gönder.
+3. Bu 12 kişinin **gerçekten uygulamayı yükleyip açması** gerekiyor (sadece davet yetmez).
+4. 14 gün dolup şartlar sağlanınca Play Console "production'a geçebilirsin" der.
+Bu yüzden yayın planını buna göre yap — son ana bırakma, en az 2 hafta önceden başlat.
 
 ## 3) İmzalı release (AAB) üretme
 
-Henüz bir keystore'un yoksa önce oluştur (bu dosyayı ve şifresini KAYBETME — kaybedersen
-uygulamayı bir daha güncelleyemezsin):
+✅ **Bu adım tamamlandı** — release keystore zaten oluşturuldu ve `android/app/build.gradle`
+otomatik olarak `android/keystore.properties` dosyasından okuyup imzalıyor.
 
-```bash
-keytool -genkey -v -keystore neon-yorunge-release.keystore -alias neonyorunge -keyalg RSA -keysize 2048 -validity 10000
-```
+- `neon-yorunge-release.keystore` — repo kökünde, **git'e dahil DEĞİL** (`.gitignore`'da)
+- `android/keystore.properties` — keystore şifreleri, **git'e dahil DEĞİL**
 
-`android/app/build.gradle` içine bir `signingConfigs` bloğu eklenip `release` build type'a
-bağlanmalı (Android Studio bunu "Generate Signed Bundle/APK" sihirbazıyla otomatik yapar —
-ilk seferde Android Studio'dan gitmek daha az hataya açık).
+⚠️ **KRİTİK — bu iki dosyayı KAYBETME:** Play Store, bir uygulamanın her güncellemesinin
+**aynı imza anahtarıyla** imzalanmasını şart koşar. Bu keystore'u veya şifresini kaybedersen,
+uygulamayı bir daha ASLA güncelleyemez, yeni bir paket adıyla sıfırdan yayınlamak zorunda
+kalırsın (tüm kullanıcı/yorum/rating geçmişini kaybedersin). **Şimdi yap:**
+`neon-yorunge-release.keystore` dosyasını ve `android/keystore.properties` içindeki şifreleri
+(ör. bir parola yöneticisine) bu bilgisayar dışında en az bir yere yedekle.
+
+Yeni bir release almak için:
 
 ```bash
 npm run cap:sync
@@ -101,7 +117,13 @@ cd android
 gradlew.bat bundleRelease      # android/app/build/outputs/bundle/release/app-release.aab üretir
 ```
 
-Üretilen `.aab` dosyası doğrudan Play Console'a yüklenir.
+Üretilen `.aab` dosyası doğrudan Play Console'a yüklenir. Her yeni sürüm için
+`android/app/build.gradle`'daki `versionCode`'u 1 artırıp `versionName`'i güncellemeyi unutma.
+
+### Play App Signing
+Play Console ilk yüklemede "Play App Signing"e kaydolmanı önerecek (varsayılan ve önerilen
+seçenek) — bu durumda yukarıdaki keystore senin **upload key**'in olur, Google kendi
+sunucusunda ayrı bir imzalama anahtarı tutar. Yine de upload key'i kaybetmemek gerekir.
 
 ## 4) Reklam/Coin ekonomisi — nerede ne var
 

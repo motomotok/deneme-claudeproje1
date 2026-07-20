@@ -11,3 +11,4 @@ android/**/build/
 android/**/.cxx/
 *.keystore
 *.jks
+android/keystore.properties
