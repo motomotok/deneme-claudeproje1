@@ -58,6 +58,10 @@ document.getElementById('pcNoBtn').addEventListener('click', e=>{ e.stopPropagat
 document.getElementById('purchaseConfirmOverlay').addEventListener('click', e=>{
   if(e.target.id==='purchaseConfirmOverlay') hidePurchaseConfirm();
 });
+document.getElementById('premiumBuyBtn').addEventListener('click', e=>{ e.stopPropagation();
+  if(window.Premium && Premium.isNative()){ Premium.purchase(); }
+  else { queueToast('💎 Premium satın alma yalnızca Play Store uygulamasında kullanılabilir.'); }
+});
 document.getElementById('privacyBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('privacy.html','_blank'); });
 document.getElementById('licensesBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('licenses.html','_blank'); });
 document.getElementById('adConsentBtn').addEventListener('click', e=>{ e.stopPropagation(); Ads.showPrivacyOptions(); });

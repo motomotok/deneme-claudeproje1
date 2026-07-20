@@ -12,6 +12,8 @@ function goMenu(){ state='menu'; setHud(false); showScreen('menu');
   document.getElementById('menuBest').textContent='En iyi: '+stats.best;
   ensureTodayQuest(); const q=currentQuest();
   document.getElementById('questLine').textContent='🎯 Günün görevi: '+q.text+(stats.questDone?' ✅':'');
+  ensureRival();
+  document.getElementById('rivalLine').textContent='🎯 '+turkishAccusative(stats.rivalName)+' geç: '+stats.rivalScore+' puan';
   refreshWallet(); }
 function goHowto(){ state='howto'; setHud(false); showScreen('howto'); }
 function goSettings(){ state='settings'; setHud(false); showScreen('settings'); syncSettings(); }
@@ -40,10 +42,14 @@ function pauseGame(){ if(state!=='play') return; state='pause'; showScreen('paus
   document.getElementById('zenFinishBtn').style.display = mode==='zen' ? 'block' : 'none'; }
 function resumeGame(){ if(state!=='pause') return; state='play'; showScreen(null); }
 
+let adGamesLeft = null;
+function rollAdInterval(){ return 2 + Math.floor(Math.random()*2); } // 2 ya da 3 oyun
+
 function gameOver(reason){
   state='over';
   const runScore=score, elapsedSec=elapsed/60;
   newRecord = runScore>stats.best;
+  const beatenRival = (stats.rivalScore>0 && runScore>=stats.rivalScore) ? stats.rivalName : null;
   stats.best=Math.max(stats.best, runScore);
   stats.stars += session.stars; stats.games++; stats.maxLevel=Math.max(stats.maxLevel, level);
   addToLeaderboard(runScore);
@@ -56,7 +62,9 @@ function gameOver(reason){
   checkAchievements({runScore, level, session, mode, elapsedSec});
   const scoreBonus = Math.floor(runScore/12);
   addStardust(scoreBonus);
+  ensureRival();
   saveStats();
+  if(beatenRival) queueToast('🏆 '+turkishAccusative(beatenRival)+' geçtin! Yeni hedef: '+stats.rivalName+' — '+stats.rivalScore);
   let reasonText='';
   if(reason==='time') reasonText='⏰ Süre doldu · ';
   else if(reason==='zen') reasonText='🧘 Oturum tamamlandı · ';
@@ -67,7 +75,14 @@ function gameOver(reason){
   document.getElementById('coinsEarned').innerHTML = `🪙 +${totalEarned} <span style="opacity:.6;font-size:12px">(${session.coins} toplama + ${scoreBonus} puan bonusu)</span>`;
   setHud(false); showScreen('over');
   beep(200,0.3,'sine',0.12);
-  setTimeout(()=>{ Ads.showInterstitial(); }, 700);
+  if(!stats.premiumNoAds){
+    if(adGamesLeft===null) adGamesLeft=rollAdInterval();
+    adGamesLeft--;
+    if(adGamesLeft<=0){
+      adGamesLeft=rollAdInterval();
+      setTimeout(()=>{ Ads.showInterstitial(); }, 700);
+    }
+  }
 }
 
 function addToLeaderboard(scoreVal){

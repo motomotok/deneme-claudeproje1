@@ -1,4 +1,4 @@
-const CACHE = 'neon-yorunge-v3';
+const CACHE = 'neon-yorunge-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   './manifest.webmanifest',
   './ads.js',
   './native-ads-bundle.js',
+  './premium.js',
   './privacy.html',
   './licenses.html',
   './game/data.js',

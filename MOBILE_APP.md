@@ -25,6 +25,7 @@ www/licenses.html        → uygulama içi açık kaynak lisans metinleri
 www/ads.js               → oyunun çağırdığı genel Ads API + tarayıcıda reklam simülasyonu
 www/native-ads-bundle.js → derlenmiş dosya (elle DÜZENLEME), src/native-ads.js'den üretilir
 src/native-ads.js        → gerçek AdMob (Capacitor) + UMP onay entegrasyonunun KAYNAK dosyası
+www/premium.js           → "Reklamsız Premium" IAP köprüsü (cordova-plugin-purchase, bundlesiz)
 android/                 → Capacitor'ın oluşturduğu native Android projesi
 capacitor.config.json    → uygulama ID'si, adı, AdMob plugin ayarları
 LICENSE                  → oyunun kendi telif bildirimi (kapalı kaynak)
@@ -127,16 +128,58 @@ sunucusunda ayrı bir imzalama anahtarı tutar. Yine de upload key'i kaybetmemek
 
 ## 4) Reklam/Coin ekonomisi — nerede ne var
 
-- **Oyun sonu geçiş reklamı**: her `gameOver()` çağrısından ~0.7sn sonra otomatik gösterilir
-  (`www/index.html` → `gameOver()` içinde `Ads.showInterstitial()`).
+- **Oyun sonu geçiş reklamı**: her oyunda DEĞİL, rastgele **2 veya 3 oyunda bir** gösterilir
+  (oyuncuyu yormamak için) — `www/game/screens.js` içinde `adGamesLeft`/`rollAdInterval()`.
+  `stats.premiumNoAds` true ise (Premium satın alınmışsa) hiç gösterilmez.
 - **"Reklam İzle → Coin"**: oyun-sonu ve mağaza ekranlarındaki buton, `watchAdForCoins()`'i
   çağırır. Ödül: `REWARD_AD_COINS = 25` yıldız tozu, günlük limit `DAILY_AD_REWARD_CAP = 10`
   (her iki sabit de `www/game/data.js` içinde, `addStardust` fonksiyonunun hemen altında).
+  Bu, Premium kullanıcılar için de aktif kalır (isteğe bağlı/opt-in olduğu için zorlayıcı değil).
 - **Revive ("son canla devam et")**: son can gidince `offerRevive()` tetiklenir, reklam
   izlenirse `lives=1` ile oyun kaldığı yerden devam eder; oyun başına sadece bir kez kullanılabilir
   (`session.revivedUsed`).
-- Tarayıcıda (Capacitor olmadan) çalışırken tüm bu akışlar `www/ads.js` içindeki simülasyon
-  overlay'i ile çalışır — gerçek reklam SDK'sı devreye girmeden test edebilirsin.
+- **Mağaza fiyatları**: ekonominin çok kolay kazanılmaması için tüm kozmetik/takviye
+  fiyatları yükseltildi (`www/game/data.js` — THEMES/SKINS/TRAILS/SUNS/RINGSTYLES/BOOSTS,
+  ör. Vaporwave teması 250→400 🪙).
+- **Rakip/hedef sistemi**: gerçek arkadaş verisi olmadığı için (backend/sosyal giriş yok)
+  Subway Surfers'daki "arkadaşını geç" hissi rastgele bir isim + mantıklı bir hedef puanla
+  simüle ediliyor. `www/game/data.js` → `RIVAL_NAMES`, `ensureRival()` (yeni hedef =
+  mevcut en iyi skor + %15-30 artış, ilk seferde 300-700 arası). Menüde
+  `#rivalLine`'da gösterilir, hedef geçilince oyun-sonunda kutlama toast'ı çıkar ve
+  yeni bir rakip belirlenir. `turkishAccusative()` fonksiyonu isim eklerini (Tolga'yı,
+  Ahmet'i, Onur'u gibi) doğru Türkçe dilbilgisiyle üretir.
+- Tarayıcıda (Capacitor olmadan) çalışırken reklam akışları `www/ads.js` içindeki
+  simülasyon overlay'i ile çalışır — gerçek reklam SDK'sı devreye girmeden test edebilirsin.
+
+### 💎 Premium (Reklamsız) — uygulama içi satın alma
+
+`www/premium.js`, native ortamda otomatik enjekte edilen `window.CdvPurchase`
+(cordova-plugin-purchase) global objesini kullanır — ads.js'ten farklı olarak
+bundle gerektirmez, npm paketi Cordova plugin sistemi üzerinden doğrudan çalışır.
+
+**Play Console'da yapman gerekenler (kod tarafı hazır):**
+1. Play Console → Monetize → Products → In-app products → yeni ürün oluştur.
+2. Ürün ID'sini **tam olarak** `remove_ads` yap (`www/premium.js`'deki `PRODUCT_ID` ile
+   birebir eşleşmeli).
+3. Tip: "Yönetilmeyen ürün" (managed product / non-consumable — bir kez alınır, kalıcıdır).
+4. Fiyatı Türkiye için ~49 TL olacak şekilde ayarla (Google diğer ülkeler için otomatik
+   dönüştürür, tam 49 TL karşılığı olmayabilir — bu normaldir).
+5. Uygulama en az bir test track'ine (closed testing) yüklenmeden IAP ürünleri
+   test edilemez/aktif olmaz — bu yüzden Premium satın alma gerçek cihazda ancak
+   uygulama Play Console'a yüklendikten sonra test edilebilir.
+
+**Nasıl çalışır:**
+- `main.js` bootstrap'ta `Premium.init()` çağrılır; ürün zaten sahipse
+  `stats.premiumNoAds=true` yapılır ve reklamlar tamamen kesilir.
+- Ayarlar ekranındaki "💎 Reklamsız Premium" butonu `Premium.purchase()`'ı tetikler,
+  Google'ın kendi satın alma diyaloğunu açar.
+- Web/tarayıcı sürümünde (`window.CdvPurchase` yokken) buton sadece bir bilgi toast'ı
+  gösterir, hiçbir şeyi bozmaz.
+- ⚠️ Bu plugin **Google Play Billing** kütüphanesini kullanıyor ve bu kütüphane
+  minSdk 23 + compileSdk/targetSdk 35 gerektiriyor — bu yüzden `android/variables.gradle`
+  (minSdk 22→23, compileSdk/targetSdk 34→35) ve `android/build.gradle` (AGP 8.2.1→8.5.2,
+  Gradle wrapper 8.2.1→8.7) güncellendi. Android 5.1 (API 22) desteği kaldırıldı —
+  günümüzde pratikte hiç kullanıcısı kalmamış bir sürüm.
 
 ## 5) Gizlilik, telif ve Google Play zorunlulukları
 

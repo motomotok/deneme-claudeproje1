@@ -6,9 +6,9 @@ const THEMES = {
   sunset:    {name:'Gün Batımı', star:'#ff9e64', gold:'#ffd93d', peril:'#ff2e63', player:'#ff6bd6', sun:'#ffb37b', bg0:'#160a14', bg1:'#2a0f24', sf:'#ffd0b0', gate:{type:'free'}},
   matrix:    {name:'Matrix',     star:'#39ff14', gold:'#c6ff3b', peril:'#ff0055', player:'#00ffc3', sun:'#7dffb0', bg0:'#020a05', bg1:'#03160b', sf:'#7dff9f', gate:{type:'free'}},
   ice:       {name:'Buz',        star:'#7fdbff', gold:'#eaf9ff', peril:'#ff5e78', player:'#4fc3ff', sun:'#bdecff', bg0:'#05101a', bg1:'#0a2033', sf:'#bfe6ff', gate:{type:'free'}},
-  vaporwave: {name:'Vaporwave',  star:'#ff6ec7', gold:'#7afcff', peril:'#ff2f6e', player:'#8a5fff', sun:'#ff9ee8', bg0:'#0f0620', bg1:'#1d0a3a', sf:'#c9a8ff', gate:{type:'coin', price:250}},
-  gilded:    {name:'Altın Çağ',  star:'#ffe08a', gold:'#fff4c2', peril:'#ff5a3c', player:'#ffd24a', sun:'#fff6da', bg0:'#120d02', bg1:'#241a05', sf:'#ffe9a8', gate:{type:'coin', price:250}},
-  void:      {name:'Kara Madde', star:'#c9c9ff', gold:'#8f8fff', peril:'#ff3d6b', player:'#4a3fff', sun:'#e0e0ff', bg0:'#020204', bg1:'#08060f', sf:'#8888aa', gate:{type:'coin', price:320}},
+  vaporwave: {name:'Vaporwave',  star:'#ff6ec7', gold:'#7afcff', peril:'#ff2f6e', player:'#8a5fff', sun:'#ff9ee8', bg0:'#0f0620', bg1:'#1d0a3a', sf:'#c9a8ff', gate:{type:'coin', price:400}},
+  gilded:    {name:'Altın Çağ',  star:'#ffe08a', gold:'#fff4c2', peril:'#ff5a3c', player:'#ffd24a', sun:'#fff6da', bg0:'#120d02', bg1:'#241a05', sf:'#ffe9a8', gate:{type:'coin', price:400}},
+  void:      {name:'Kara Madde', star:'#c9c9ff', gold:'#8f8fff', peril:'#ff3d6b', player:'#4a3fff', sun:'#e0e0ff', bg0:'#020204', bg1:'#08060f', sf:'#8888aa', gate:{type:'coin', price:500}},
 };
 let T = THEMES.neon;
 function applyTheme(key){
@@ -27,11 +27,11 @@ const SKINS = [
   {id:'solar',   name:'Altın Orb',  color:'#ffd24a', gate:{type:'achievement', id:'lvl5'}},
   {id:'aurora',  name:'Elmas Orb',  color:'#7fe8ff', gate:{type:'achievement', id:'diamondhunter'}},
   {id:'crimson', name:'Kızıl Orb',  color:'#ff4d6d', gate:{type:'achievement', id:'combo15'}},
-  {id:'ember',   name:'Kor Orb',    color:'#ff8a3d', gate:{type:'coin', price:150}},
-  {id:'frost',   name:'Buz Orb',    color:'#bfe8ff', gate:{type:'coin', price:150}},
-  {id:'toxic',   name:'Toksik Orb', color:'#baff3d', gate:{type:'coin', price:220}},
-  {id:'obsidian',name:'Obsidyen Orb', color:'#7d6fae', gate:{type:'coin', price:220}},
-  {id:'prism',   name:'Prizma Orb', color:'#ffffff', gate:{type:'coin', price:400}, rainbow:true},
+  {id:'ember',   name:'Kor Orb',    color:'#ff8a3d', gate:{type:'coin', price:250}},
+  {id:'frost',   name:'Buz Orb',    color:'#bfe8ff', gate:{type:'coin', price:250}},
+  {id:'toxic',   name:'Toksik Orb', color:'#baff3d', gate:{type:'coin', price:350}},
+  {id:'obsidian',name:'Obsidyen Orb', color:'#7d6fae', gate:{type:'coin', price:350}},
+  {id:'prism',   name:'Prizma Orb', color:'#ffffff', gate:{type:'coin', price:650}, rainbow:true},
 ];
 function playerColor(){
   const sk=SKINS.find(s=>s.id===cfg.skin)||SKINS[0];
@@ -42,30 +42,30 @@ function playerColor(){
 
 const TRAILS = [
   {id:'classic', name:'Klasik',        gate:{type:'free'}},
-  {id:'sparkle', name:'Kıvılcım',      gate:{type:'coin', price:120}},
-  {id:'comet',   name:'Kuyruklu Yıldız', gate:{type:'coin', price:180}},
-  {id:'rainbow', name:'Gökkuşağı',     gate:{type:'coin', price:280}},
-  {id:'pixel',   name:'Piksel',        gate:{type:'coin', price:160}},
-  {id:'ribbon',  name:'Kurdele',       gate:{type:'coin', price:200}},
+  {id:'sparkle', name:'Kıvılcım',      gate:{type:'coin', price:200}},
+  {id:'comet',   name:'Kuyruklu Yıldız', gate:{type:'coin', price:300}},
+  {id:'rainbow', name:'Gökkuşağı',     gate:{type:'coin', price:450}},
+  {id:'pixel',   name:'Piksel',        gate:{type:'coin', price:260}},
+  {id:'ribbon',  name:'Kurdele',       gate:{type:'coin', price:320}},
 ];
 const SUNS = [
   {id:'classic',   name:'Klasik Yıldız',  gate:{type:'free'}},
-  {id:'redgiant',  name:'Kızıl Dev',      gate:{type:'coin', price:150}},
-  {id:'blackhole', name:'Kara Delik',     gate:{type:'coin', price:350}},
-  {id:'nebula',    name:'Nebula',         gate:{type:'coin', price:220}},
-  {id:'crystal',   name:'Kristal Çekirdek', gate:{type:'coin', price:220}},
+  {id:'redgiant',  name:'Kızıl Dev',      gate:{type:'coin', price:250}},
+  {id:'blackhole', name:'Kara Delik',     gate:{type:'coin', price:550}},
+  {id:'nebula',    name:'Nebula',         gate:{type:'coin', price:350}},
+  {id:'crystal',   name:'Kristal Çekirdek', gate:{type:'coin', price:350}},
 ];
 const RINGSTYLES = [
   {id:'classic', name:'Klasik',     gate:{type:'free'}},
-  {id:'dotted',  name:'Noktalı',    gate:{type:'coin', price:100}},
-  {id:'glow',    name:'Parlak',     gate:{type:'coin', price:180}},
-  {id:'double',  name:'Çift Çizgi', gate:{type:'coin', price:160}},
+  {id:'dotted',  name:'Noktalı',    gate:{type:'coin', price:160}},
+  {id:'glow',    name:'Parlak',     gate:{type:'coin', price:300}},
+  {id:'double',  name:'Çift Çizgi', gate:{type:'coin', price:260}},
 ];
 const BOOSTS = [
-  {id:'shieldstart', name:'Kalkanla Başla', desc:'Oyuna kalkan aktifken başlarsın', icon:'🛡️', price:80},
-  {id:'slowstart',   name:'Yavaş Açılış',   desc:'İlk saniyelerde orb yavaş döner', icon:'⏳', price:60},
-  {id:'luckystart',  name:'Şanslı Açılış',  desc:'İlk 3 tehlikeli an güvenliye çevrilir', icon:'🍀', price:70},
-  {id:'coinrush',    name:'Toz Rüzgarı',    desc:'Bu oyunda kazanılan yıldız tozu %50 fazla', icon:'💫', price:100},
+  {id:'shieldstart', name:'Kalkanla Başla', desc:'Oyuna kalkan aktifken başlarsın', icon:'🛡️', price:130},
+  {id:'slowstart',   name:'Yavaş Açılış',   desc:'İlk saniyelerde orb yavaş döner', icon:'⏳', price:100},
+  {id:'luckystart',  name:'Şanslı Açılış',  desc:'İlk 3 tehlikeli an güvenliye çevrilir', icon:'🍀', price:110},
+  {id:'coinrush',    name:'Toz Rüzgarı',    desc:'Bu oyunda kazanılan yıldız tozu %50 fazla', icon:'💫', price:160},
 ];
 
 function isUnlockedItem(category, item){
@@ -82,6 +82,7 @@ let stats = load('neonYorungeStats', {
   questDate:'', questId:'', questDone:false,
   stardust:0, lifetimeStardust:0, owned:{themes:[], skins:[], trails:[], suns:[], rings:[]}, boosts:{},
   adRewardsDate:'', adRewardsToday:0,
+  rivalName:'', rivalScore:0, premiumNoAds:false,
 });
 function load(k,def){ try{ return Object.assign({}, def, JSON.parse(localStorage.getItem(k)||'{}')); }catch(e){ return def; } }
 function saveCfg(){ try{ localStorage.setItem('neonYorungeCfg', JSON.stringify(cfg)); }catch(e){} }
@@ -106,6 +107,38 @@ function dateSeed(d){ d=d||new Date(); return d.getFullYear()*10000+(d.getMonth(
 function todayStr(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 let rngFn = Math.random;
 function rnd(){ return rngFn(); }
+
+// "Rakip" hedef sistemi — gerçek arkadaş verisi yok (backend/sosyal giriş
+// yok), bu yüzden Subway Surfers'ın "arkadaşını geç" bannerındaki hissi
+// rastgele bir isim + mantıklı bir hedef puanla simüle ediyoruz.
+const RIVAL_NAMES = [
+  'Ahmet','Mehmet','Ayşe','Fatma','Zeynep','Emre','Deniz','Can','Elif','Burak',
+  'Ece','Kerem','Selin','Onur','Yusuf','Merve','Berk','Cem','Gizem','Umut',
+  'İrem','Kaan','Aslı','Barış','Nazlı','Serkan','Buse','Tolga','Pınar','Volkan',
+];
+// Türkçe belirtme hâli (accusative) eki: son ünlüye göre ı/i/u/ü seçilir,
+// isim ünlüyle bitiyorsa araya kaynaştırma "y" harfi girer (Tolga'yı,
+// Ahmet'i, Onur'u gibi) — sabit bir "'i" eki yanlış isimlerde yanlış olurdu.
+function turkishAccusative(name){
+  const vowels='aeıioöuü';
+  const lower=name.toLocaleLowerCase('tr-TR');
+  let lastVowel=null;
+  for(let i=lower.length-1;i>=0;i--){ if(vowels.includes(lower[i])){ lastVowel=lower[i]; break; } }
+  const sufMap={a:'ı', ı:'ı', e:'i', i:'i', o:'u', u:'u', ö:'ü', ü:'ü'};
+  const suf=sufMap[lastVowel]||'ı';
+  const endsInVowel=vowels.includes(lower[lower.length-1]);
+  return name+"'"+(endsInVowel?'y':'')+suf;
+}
+function ensureRival(){
+  if(stats.rivalScore>0 && stats.best<stats.rivalScore) return;
+  let name;
+  do{ name=RIVAL_NAMES[Math.floor(Math.random()*RIVAL_NAMES.length)]; }while(name===stats.rivalName && RIVAL_NAMES.length>1);
+  let target;
+  if(stats.best<=0) target = 300+Math.floor(Math.random()*400);
+  else target = stats.best + Math.max(150, Math.round(stats.best*(0.15+Math.random()*0.15)));
+  stats.rivalName=name; stats.rivalScore=target;
+  saveStats();
+}
 
 const QUEST_POOL = [
   {id:'magnet3', text:'3 mıknatıs topla', check:s=>s.magnets>=3},

@@ -10,6 +10,20 @@ function syncSettings(){
   renderThemeGrid();
   document.querySelectorAll('.theme').forEach(el=>el.classList.toggle('sel', el.dataset.key===cfg.theme));
   renderSkins();
+  syncPremiumUI();
+}
+function syncPremiumUI(price){
+  const txt=document.getElementById('premiumStatusText');
+  const btn=document.getElementById('premiumBuyBtn');
+  if(!txt || !btn) return;
+  if(stats.premiumNoAds){
+    txt.textContent='✅ Premium aktif — reklamsız oynuyorsun!';
+    btn.style.display='none';
+  } else {
+    txt.textContent='💎 Premium ile reklamsız oyna';
+    btn.style.display='inline-block';
+    btn.textContent='💎 Reklamsız Premium — '+(price || (window.Premium ? Premium.FALLBACK_PRICE_TEXT : '49 TL'));
+  }
 }
 function syncStats(){
   document.getElementById('stBest').textContent=stats.best;
