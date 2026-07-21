@@ -32,6 +32,18 @@ function syncStats(){
   document.getElementById('stLevel').textContent=stats.maxLevel;
   renderAchievements();
   renderLeaderboard();
+  renderRivalLeague();
+}
+function renderRivalLeague(){
+  const el=document.getElementById('leagueList'); if(!el) return;
+  ensureRivalLeague();
+  el.innerHTML = stats.rivalLeague.map(r=>{
+    const beaten = stats.best>=r.score;
+    return `<div class="row" style="${beaten?'opacity:.55':''}">
+      <span class="k">${beaten?'✅':'🎯'} ${turkishAccusative(r.name)} geç</span>
+      <span class="v">${r.score}</span>
+    </div>`;
+  }).join('');
 }
 function renderSkins(){
   const grid=document.getElementById('skinGrid'); grid.innerHTML='';
@@ -93,16 +105,22 @@ function setEquipped(category, id){
 }
 function purchase(category, item){
   if(item.gate.type!=='coin') return false;
-  if(stats.stardust < item.gate.price){
-    queueToast('🪙 Yetersiz Yıldız Tozu — '+(item.gate.price-stats.stardust)+' eksik');
+  const price = effectivePrice(category, item);
+  if(stats.stardust < price){
+    queueToast('🪙 Yetersiz Yıldız Tozu — '+(price-stats.stardust)+' eksik');
     beep(200,0.12,'square',0.1); return false;
   }
-  stats.stardust -= item.gate.price;
+  stats.stardust -= price;
   stats.owned[category].push(item.id);
   saveStats(); refreshWallet();
   queueToast('✅ '+item.name+' satın alındı!');
   beep(700,0.1,'sine',0.13); beep(1000,0.1,'triangle',0.12);
   return true;
+}
+function renderDealBanner(){
+  const el=document.getElementById('dealBanner'); if(!el) return;
+  const deal=activeDeal();
+  el.textContent = deal ? ('🔥 Günün Fırsatı: '+deal.item.name+' %'+Math.round(DEAL_DISCOUNT*100)+' indirimli!') : '';
 }
 
 let pendingPurchase = null;
@@ -123,7 +141,7 @@ function onShopCardClick(category, item){
   const unlocked = isUnlockedItem(category, item);
   if(!unlocked){
     if(item.gate.type==='coin'){
-      showPurchaseConfirm('🎨', item.name, item.gate.price, ()=>{
+      showPurchaseConfirm('🎨', item.name, effectivePrice(category,item), ()=>{
         if(purchase(category,item)) setEquipped(category, item.id);
         renderSkins(); renderThemeGrid(); syncShopIfOpen();
       });
@@ -181,7 +199,12 @@ function renderShopGrid(category){
     const card=document.createElement('div');
     card.className='shopCard'+(equipped?' equipped':'')+(!unlocked?' locked':'');
     let priceHtml;
-    if(!unlocked && item.gate.type==='coin') priceHtml=`<div class="price">🪙 ${item.gate.price}</div>`;
+    if(!unlocked && item.gate.type==='coin'){
+      const isDeal = category===stats.dealCategory && item.id===stats.dealId;
+      priceHtml = isDeal
+        ? `<div class="price">🔥 <s style="opacity:.6">${item.gate.price}</s> 🪙 ${effectivePrice(category,item)}</div>`
+        : `<div class="price">🪙 ${item.gate.price}</div>`;
+    }
     else if(!unlocked && item.gate.type==='achievement'){
       const ach=ACHIEVEMENTS.find(a=>a.id===item.gate.id);
       priceHtml=`<div class="price lockreq">🔒 ${ach?ach.name:''}</div>`;
@@ -248,7 +271,12 @@ function renderThemeGrid(){
     const item = Object.assign({id:key}, t);
     const unlocked = isUnlockedItem('themes', item);
     const d=document.createElement('div'); d.className='theme'+(!unlocked?' locked':''); d.dataset.key=key;
-    const priceTag = !unlocked ? `<div class="price" style="font-size:10.5px;color:#ffd28a;margin-top:2px">🪙 ${t.gate.price}</div>` : '';
+    const themeIsDeal = !unlocked && stats.dealCategory==='themes' && stats.dealId===key;
+    const priceTag = !unlocked
+      ? (themeIsDeal
+        ? `<div class="price" style="font-size:10.5px;color:#ffd28a;margin-top:2px">🔥 <s style="opacity:.6">${t.gate.price}</s> 🪙 ${effectivePrice('themes',item)}</div>`
+        : `<div class="price" style="font-size:10.5px;color:#ffd28a;margin-top:2px">🪙 ${t.gate.price}</div>`)
+      : '';
     d.innerHTML=`<div class="swatch"><span style="background:${t.star}"></span><span style="background:${t.gold}"></span><span style="background:${t.peril}"></span><span style="background:${t.player}"></span></div><div class="tn">${t.name}</div>${priceTag}`;
     d.addEventListener('click', ()=>onShopCardClick('themes', item));
     grid.appendChild(d);

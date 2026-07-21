@@ -174,7 +174,7 @@ function update(dt){
       else if(it.type==='star'){ combo++; score+=combo*mult; session.stars++;
         burst(ix,iy,T.star,14,4); shake=3; beep(660+combo*8,0.07,'sine',0.12); bumpCombo(); checkStreak(ix,iy,mult); }
       else if(it.type==='coin'){
-        const gained=Math.round((3+Math.floor(rnd()*4))*session.stardustMult);
+        const gained=Math.round((3+Math.floor(rnd()*4))*session.stardustMult*weekendMult());
         addStardust(gained); session.coins+=gained; session.coinPickups++;
         burst(ix,iy,'#ffb454',18,4.5); shake=4; beep(950,0.08,'triangle',0.13); beep(1400,0.06,'sine',0.1);
       }

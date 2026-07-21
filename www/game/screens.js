@@ -14,12 +14,18 @@ function goMenu(){ state='menu'; setHud(false); showScreen('menu');
   document.getElementById('questLine').textContent='🎯 Günün görevi: '+q.text+(stats.questDone?' ✅':'');
   ensureRival();
   document.getElementById('rivalLine').textContent='🎯 '+turkishAccusative(stats.rivalName)+' geç: '+stats.rivalScore+' puan';
+  const streakEl=document.getElementById('streakLine');
+  if(streakEl){
+    let txt='🔥 '+stats.loginStreak+' gün üst üste giriş';
+    if(weekendMult()>1) txt+='  ·  ⚡ Hafta sonu: +%20 yıldız tozu';
+    streakEl.textContent=txt;
+  }
   refreshWallet(); }
 function goHowto(){ state='howto'; setHud(false); showScreen('howto'); }
 function goSettings(){ state='settings'; setHud(false); showScreen('settings'); syncSettings(); }
 function goStats(){ state='stats'; setHud(false); showScreen('stats'); syncStats(); }
 function goMode(){ state='mode'; setHud(false); showScreen('mode'); refreshDailyStatus(); renderBoostRow(); }
-function goShop(){ state='shop'; setHud(false); showScreen('shop'); refreshWallet(); renderShopTab(); }
+function goShop(){ state='shop'; setHud(false); showScreen('shop'); ensureDailyDeal(); refreshWallet(); renderDealBanner(); renderShopTab(); }
 
 function startGame(m,d){
   m = m || mode; d = d || diffKey;
@@ -60,7 +66,7 @@ function gameOver(reason){
     stats.questDone=true; queueToast('🎯 Günlük görev tamamlandı: '+q.text);
   }
   checkAchievements({runScore, level, session, mode, elapsedSec});
-  const scoreBonus = Math.floor(runScore/12);
+  const scoreBonus = Math.round(Math.floor(runScore/12)*weekendMult());
   addStardust(scoreBonus);
   ensureRival();
   saveStats();

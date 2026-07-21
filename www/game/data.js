@@ -75,6 +75,40 @@ function isUnlockedItem(category, item){
   return false;
 }
 
+const DEAL_DISCOUNT = 0.3;
+const DEAL_CATEGORIES = {
+  themes: ()=>Object.keys(THEMES).map(k=>Object.assign({id:k}, THEMES[k])),
+  skins: ()=>SKINS, trails: ()=>TRAILS, suns: ()=>SUNS, rings: ()=>RINGSTYLES,
+};
+// Her gün tarih-seed'li RNG ile kozmetik kataloglardan bir öğe seçip
+// %30 indirim uygular ("Günün Fırsatı"). goShop() her açılışta çağırır,
+// stats.dealDate bugünse no-op olduğu için güvenle tekrar çağrılabilir.
+function ensureDailyDeal(){
+  const t = todayStr();
+  if(stats.dealDate===t) return;
+  const candidates=[];
+  for(const cat in DEAL_CATEGORIES){
+    DEAL_CATEGORIES[cat]().forEach(item=>{
+      if(item.gate.type==='coin' && !isUnlockedItem(cat,item)) candidates.push({cat, id:item.id});
+    });
+  }
+  stats.dealDate = t;
+  if(candidates.length){
+    const pick = candidates[Math.floor(mulberry32(dateSeed())()*candidates.length)];
+    stats.dealCategory = pick.cat; stats.dealId = pick.id;
+  } else { stats.dealCategory=''; stats.dealId=''; }
+  saveStats();
+}
+function activeDeal(){
+  if(!stats.dealCategory || !stats.dealId) return null;
+  const item = (DEAL_CATEGORIES[stats.dealCategory]?DEAL_CATEGORIES[stats.dealCategory]():[]).find(i=>i.id===stats.dealId);
+  return item ? {category:stats.dealCategory, item} : null;
+}
+function effectivePrice(category, item){
+  if(category===stats.dealCategory && item.id===stats.dealId) return Math.round(item.gate.price*(1-DEAL_DISCOUNT));
+  return item.gate.price;
+}
+
 let cfg = load('neonYorungeCfg', {sound:true, theme:'neon', skin:'default', trail:'classic', sun:'classic', ringStyle:'classic', bigButtons:false, leftHand:false, colorblind:false});
 let stats = load('neonYorungeStats', {
   best:0, stars:0, games:0, maxLevel:1, magnets:0, golds:0, diamonds:0,
@@ -83,6 +117,9 @@ let stats = load('neonYorungeStats', {
   stardust:0, lifetimeStardust:0, owned:{themes:[], skins:[], trails:[], suns:[], rings:[]}, boosts:{},
   adRewardsDate:'', adRewardsToday:0,
   rivalName:'', rivalScore:0, premiumNoAds:false,
+  lastSeenDate:'', loginStreak:0,
+  dealDate:'', dealCategory:'', dealId:'',
+  rivalLeague:[],
 });
 function load(k,def){ try{ return Object.assign({}, def, JSON.parse(localStorage.getItem(k)||'{}')); }catch(e){ return def; } }
 function saveCfg(){ try{ localStorage.setItem('neonYorungeCfg', JSON.stringify(cfg)); }catch(e){} }
@@ -105,6 +142,11 @@ function mulberry32(seed){
 }
 function dateSeed(d){ d=d||new Date(); return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate(); }
 function todayStr(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function daysBetweenStr(a,b){
+  const da=new Date(a+'T00:00:00'), db=new Date(b+'T00:00:00');
+  return Math.round((db-da)/86400000);
+}
+function weekendMult(){ return [5,6,0].includes(new Date().getDay()) ? 1.2 : 1; }
 let rngFn = Math.random;
 function rnd(){ return rngFn(); }
 
@@ -137,6 +179,53 @@ function ensureRival(){
   if(stats.best<=0) target = 300+Math.floor(Math.random()*400);
   else target = stats.best + Math.max(150, Math.round(stats.best*(0.15+Math.random()*0.15)));
   stats.rivalName=name; stats.rivalScore=target;
+  saveStats();
+}
+
+// "Rakipler Ligi" — İstatistikler ekranında gösterilen 5 kademeli sabit
+// hedef listesi (ensureRival'daki tekli banner'dan ayrı, geriye dönük
+// tüm kademeleri aynı anda görebilmek için).
+function ensureRivalLeague(){
+  const league = stats.rivalLeague||[];
+  const topScore = league.length ? league[league.length-1].score : 0;
+  if(league.length>0 && stats.best<topScore) return;
+  const usedNames = new Set();
+  let base = stats.best>0 ? stats.best : 0;
+  const fresh=[];
+  for(let i=0;i<5;i++){
+    let name;
+    do{ name=RIVAL_NAMES[Math.floor(Math.random()*RIVAL_NAMES.length)]; }while(usedNames.has(name) && usedNames.size<RIVAL_NAMES.length);
+    usedNames.add(name);
+    if(base<=0) base = 300+Math.floor(Math.random()*400);
+    else base += 150+Math.floor(Math.random()*150);
+    fresh.push({name, score:base, beaten:false});
+  }
+  stats.rivalLeague = fresh;
+  saveStats();
+}
+
+// Giriş serisi ödülleri: gün 1..7, 8. günden itibaren döngü tekrarlanır.
+const LOGIN_STREAK_REWARDS = [20,30,40,60,80,100,150];
+
+// Uygulama her açıldığında bir kez çağrılır: (1) günlerdir açılmadıysa
+// "geri dönüş" bonusu verir, (2) art arda giriş serisini günceller ve
+// ödülünü verir. `stats.lastSeenDate` bugünse fonksiyon no-op'tur, bu
+// yüzden aynı gün içinde tekrar çağrılması güvenlidir.
+function handleDailyReturn(){
+  const t = todayStr();
+  if(stats.lastSeenDate === t) return;
+  const gap = stats.lastSeenDate ? daysBetweenStr(stats.lastSeenDate, t) : 0;
+  if(gap>=3){
+    const bonus = Math.min(300, gap*20);
+    addStardust(bonus);
+    queueToast('👋 Seni özledik! '+gap+' gündür yoktun — +'+bonus+' 🪙');
+  }
+  stats.loginStreak = (gap===1) ? (stats.loginStreak||0)+1 : 1;
+  const day = Math.min(stats.loginStreak, LOGIN_STREAK_REWARDS.length);
+  const reward = LOGIN_STREAK_REWARDS[day-1];
+  addStardust(reward);
+  queueToast('🔥 Giriş serisi '+stats.loginStreak+'. gün — +'+reward+' 🪙');
+  stats.lastSeenDate = t;
   saveStats();
 }
 

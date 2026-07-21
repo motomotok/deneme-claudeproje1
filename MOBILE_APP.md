@@ -151,6 +151,38 @@ sunucusunda ayrı bir imzalama anahtarı tutar. Yine de upload key'i kaybetmemek
 - Tarayıcıda (Capacitor olmadan) çalışırken reklam akışları `www/ads.js` içindeki
   simülasyon overlay'i ile çalışır — gerçek reklam SDK'sı devreye girmeden test edebilirsin.
 
+### 🔥 Oyuncu Bağlılığı (Retention) Mekanikleri
+
+Hepsi tamamen istemci tarafında (`localStorage`), sunucu/backend gerektirmez.
+
+- **Günlük Giriş Serisi**: Uygulama her açıldığında `main.js` içinde bir kez
+  `handleDailyReturn()` çağrılır (`www/game/data.js`). Art arda gün geçtikçe
+  `stats.loginStreak` artar, `LOGIN_STREAK_REWARDS = [20,30,40,60,80,100,150]`
+  tablosuna göre ödül verilir (7. günden sonra döngü tekrarlar). Menüde
+  `#streakLine`'da her zaman görünür. Bir gün atlanırsa (art arda gelmezse)
+  seri 1'e sıfırlanır.
+- **Geri Dönüş Ödülü**: Aynı `handleDailyReturn()` fonksiyonu, son girişten bu yana
+  **3+ gün** geçtiyse `Math.min(300, gün*20)` 🪙 bonus verir ("👋 Seni özledik!").
+  Bu, giriş serisi ödülüne ek olarak verilir (seri zaten sıfırlanmış olur çünkü
+  ardışık gün değildir).
+- **Günün Fırsatı**: Mağaza her açıldığında (`goShop()` → `ensureDailyDeal()`)
+  tarih-seed'li RNG ile kozmetik kataloglardan (tema/orb/iz/güneş/halka) bir
+  öğe seçilip **%30 indirim** uygulanır — gün boyunca sabit kalır, ertesi gün
+  değişir. Mağazada 🔥 rozeti ve üstü çizili eski fiyatla gösterilir
+  (`DEAL_DISCOUNT`, `ensureDailyDeal()`, `effectivePrice()` — `data.js`).
+- **Hafta Sonu Coin Bonusu**: Cuma/Cumartesi/Pazar günleri oyun-içi kazanılan
+  yıldız tozunda **+%20** (`weekendMult()` — `data.js`; uygulandığı yerler:
+  `engine.js` coin toplama ve `screens.js` oyun-sonu puan bonusu).
+- **Rakipler Ligi**: İstatistikler ekranında (`#leagueCard`), tek bir rastgele
+  rakip yerine (mevcut `ensureRival()`/menü banner'ı, değişmedi) **5 kademelik**
+  artan hedef listesi (`ensureRivalLeague()` — `data.js`), her biri farklı
+  rastgele isim+skor, geçilenler ✅ ile işaretlenir. **Not:** Bu, gerçek
+  arkadaş verisi DEĞİL — hâlâ yerel simülasyon. Gerçek bir "arkadaşlarını geç"
+  özelliği için Google Play Games Services (bulut kayıt + OAuth + Play
+  Console'da ayrı bir kurulum, `google-services.json`/SHA-1 parmak izi
+  gerektirir) entegre edilmesi gerekir — bu, AdMob/IAP'tan bağımsız,
+  ayrı ve daha büyük bir iş olarak ileride ele alınabilir.
+
 ### 💎 Premium (Reklamsız) — uygulama içi satın alma
 
 `www/premium.js`, native ortamda otomatik enjekte edilen `window.CdvPurchase`
