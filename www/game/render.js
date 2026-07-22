@@ -169,6 +169,26 @@ function drawRing(r){
       const x=CX+Math.cos(a)*r, y=CY+Math.sin(a)*r;
       ctx.fillRect(x-1.5,y-1.5,3,3);
     }
+  } else if(style==='season1_ring'){
+    const pt=performance.now()*0.001;
+    ctx.strokeStyle=hexA('#54e0ff',0.45+Math.sin(pt*2)*0.15); ctx.lineWidth=2.5;
+    ctx.beginPath(); ctx.arc(CX,CY,r,0,7); ctx.stroke();
+    ctx.strokeStyle=hexA('#ffd24a',0.3); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(CX,CY,r+4,0,7); ctx.stroke();
+    ctx.save(); ctx.translate(CX,CY); ctx.rotate(pt*0.5);
+    ctx.fillStyle=hexA('#fff8d8',0.85);
+    for(let i=0;i<10;i++){ const a=(i/10)*Math.PI*2; ctx.beginPath(); ctx.arc(Math.cos(a)*r,Math.sin(a)*r,1.8,0,7); ctx.fill(); }
+    ctx.restore();
+  } else if(style==='season2_ring'){
+    const pt=performance.now()*0.001;
+    ctx.strokeStyle=hexA('#ffd24a',0.22); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(CX,CY,r-4,0,7); ctx.stroke();
+    ctx.save(); ctx.translate(CX,CY); ctx.rotate(pt*0.4);
+    ctx.strokeStyle=hexA('#ff8a3d',0.5+Math.sin(pt*2.4)*0.18); ctx.lineWidth=2.5;
+    ctx.setLineDash([10,6]);
+    ctx.beginPath(); ctx.arc(0,0,r,0,7); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
   } else {
     ctx.strokeStyle='rgba(150,175,255,0.15)'; ctx.lineWidth=2;
     ctx.beginPath(); ctx.arc(CX,CY,r,0,7); ctx.stroke();
@@ -211,6 +231,12 @@ function drawTrail(t,pr,pc){
       col='#eaf2ff'; size=baseSize*1.1;
       ctx.globalAlpha=(1-i/10)*0.22;
       ctx.beginPath(); ctx.arc(tx,ty,size,0,7); ctx.fill(); continue;
+    } else if(style==='season1_trail'){
+      col = (i%2===0) ? '#54e0ff' : '#fff6c8';
+      size = baseSize*(1+Math.sin(t*5-i*0.6)*0.2);
+    } else if(style==='season2_trail'){
+      col = `hsl(${28+Math.sin(t*3-i*0.4)*10},95%,${Math.max(35,60-i*2)}%)`;
+      size = baseSize*(1+Math.cos(t*4-i*0.5)*0.15);
     }
     ctx.globalAlpha=(1-i/10)*0.4; ctx.fillStyle=col;
     ctx.beginPath(); ctx.arc(tx,ty,size,0,7); ctx.fill();

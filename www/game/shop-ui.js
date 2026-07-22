@@ -174,7 +174,7 @@ function onShopCardClick(category, item){
         renderSkins(); renderThemeGrid(); syncShopIfOpen();
       });
     } else if(item.gate.type==='seasonpass'){
-      queueToast('🔒 '+item.name+' — Sezon Bileti\'nin son kademesinden açılır.');
+      queueToast('🔒 '+item.name+' — Sezon Bileti ilerlemesiyle açılır. Sezon bitince bir daha alınamaz!');
       beep(200,0.1,'square',0.1);
     } else {
       const ach=ACHIEVEMENTS.find(a=>a.id===item.gate.id);
@@ -191,12 +191,18 @@ function syncShopIfOpen(){ if(state==='shop') renderShopTab(); }
 
 let shopTab='themes';
 function shopItemsFor(cat){
-  if(cat==='themes') return Object.keys(THEMES).map(k=>Object.assign({id:k}, THEMES[k]));
-  if(cat==='skins') return SKINS;
-  if(cat==='trails') return TRAILS;
-  if(cat==='suns') return SUNS;
-  if(cat==='rings') return RINGSTYLES;
-  return [];
+  let items;
+  if(cat==='themes') items = Object.keys(THEMES).map(k=>Object.assign({id:k}, THEMES[k]));
+  else if(cat==='skins') items = SKINS;
+  else if(cat==='trails') items = TRAILS;
+  else if(cat==='suns') items = SUNS;
+  else if(cat==='rings') items = RINGSTYLES;
+  else return [];
+  // Geçmiş/gelecek sezonların kozmetikleri, o an sahip olunmuyorsa listeden
+  // tamamen kalkar — bir sezon kaçırıldıysa ödülü bir daha kimse göremez/
+  // alamaz, bu da erken oynayanlar için kalıcı bir nadirlik yaratır.
+  const curSeason = activeSeason().id;
+  return items.filter(it=> it.gate.type!=='seasonpass' || it.gate.season===curSeason || isUnlockedItem(cat,it));
 }
 function swatchHtml(category, item){
   if(category==='themes'){
@@ -222,6 +228,8 @@ function trailDotStyle(id,i){
   if(id==='ribbon') return `background:var(--accent-2,#a97bff);opacity:${op};border-radius:50%;width:${8-i}px;height:${8-i}px;transform:translateY(${(i%2?4:-4)}px);`;
   if(id==='quantum') return `background:${i%2?'#7fe8ff':'var(--accent-2,#a97bff)'};opacity:${op};border-radius:50%;width:${9-i}px;height:${9-i}px;`;
   if(id==='phantom') return `background:#eaf2ff;opacity:${op*0.5};border-radius:50%;width:${10-i}px;height:${10-i}px;`;
+  if(id==='season1_trail') return `background:${i%2?'#fff6c8':'#54e0ff'};opacity:${op};border-radius:50%;width:${9-i}px;height:${9-i}px;box-shadow:0 0 4px currentColor;`;
+  if(id==='season2_trail') return `background:hsl(${28+i*6},95%,${Math.max(35,60-i*4)}%);opacity:${op};border-radius:50%;width:${9-i}px;height:${9-i}px;`;
   return `background:var(--accent-2,#a97bff);opacity:${op};border-radius:50%;width:${9-i}px;height:${9-i}px;`;
 }
 function renderShopGrid(category){
@@ -242,7 +250,8 @@ function renderShopGrid(category){
       const ach=ACHIEVEMENTS.find(a=>a.id===item.gate.id);
       priceHtml=`<div class="price lockreq">${icon('lock')} ${ach?ach.name:''}</div>`;
     } else if(!unlocked && item.gate.type==='seasonpass'){
-      priceHtml=`<div class="price lockreq">${icon('ticket')} Sezon Ödülü</div>`;
+      const sName = SEASONS.find(s=>s.id===item.gate.season);
+      priceHtml=`<div class="price lockreq">${icon('ticket')} ${sName?sName.name+' Ödülü':'Sezon Ödülü'}</div>`;
     } else if(equipped) priceHtml=`<div class="price ok">${icon('check')} Takılı</div>`;
     else priceHtml=`<div class="price ok">Sahip</div>`;
     card.innerHTML = swatchHtml(category,item)+`<div class="cn">${item.name}</div>`+priceHtml;

@@ -18,7 +18,9 @@ function syncSeasonPassUI(price){
 
 function renderBattlepass(){
   ensureSeason();
-  document.getElementById('seasonXpLine').textContent = stats.seasonXp+' XP · '+stats.seasonKey;
+  const s = activeSeason();
+  const daysLeft = Math.max(0, s.days - seasonDayIndex(s.start, new Date()));
+  document.getElementById('seasonXpLine').textContent = stats.seasonXp+' XP · '+s.name+' · '+daysLeft+' gün kaldı';
   syncSeasonPassUI();
   const wrap=document.getElementById('battlepassTiers'); wrap.innerHTML='';
   SEASON_TIERS.forEach((tier,i)=>{
@@ -37,7 +39,7 @@ function renderBattlepass(){
     tile.appendChild(freeBtn);
 
     const premBtn=document.createElement('button');
-    const premLabel = tier.premiumCosmetic ? ('+'+tier.premium+' '+icon('coin')+' '+icon('palette')) : ('+'+tier.premium+' '+icon('coin'));
+    const premLabel = tier.cosmeticSlot ? ('+'+tier.premium+' '+icon('coin')+' '+icon('palette')) : ('+'+tier.premium+' '+icon('coin'));
     premBtn.className='bpChip premium'+((!stats.seasonPremium)?' locked':premClaimed?' claimed':reached?' claimable':' locked');
     if(!stats.seasonPremium){ premBtn.innerHTML=icon('ticket')+' '+premLabel; premBtn.disabled=true; }
     else if(premClaimed){ premBtn.innerHTML=icon('check')+' '+premLabel; premBtn.disabled=true; }

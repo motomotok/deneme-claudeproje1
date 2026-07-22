@@ -290,6 +290,8 @@ body.left-hand #walletChip{left:18px;right:auto;}
 .ringPreview.dotted{border-style:dotted;border-width:3px;}
 .ringPreview.glow{box-shadow:0 0 14px #8ecdfa,0 0 3px #8ecdfa inset;border-color:rgba(142,205,250,.5);}
 .ringPreview.double{border-style:double;border-width:7px;}
+.ringPreview.season1_ring{border-color:#54e0ff;box-shadow:0 0 14px #54e0ff,0 0 4px #ffd24a inset;}
+.ringPreview.season2_ring{border-style:dashed;border-color:#ff8a3d;box-shadow:0 0 12px #ff8a3d;}
 .trailPreview{display:flex;align-items:center;gap:3px;height:44px;}
 
 .gicon{width:1em;height:1em;display:inline-flex;flex:none;vertical-align:-0.15em;
