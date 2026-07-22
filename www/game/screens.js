@@ -79,7 +79,9 @@ function gameOver(reason){
   if(reason==='time') reasonText='⏰ Süre doldu · ';
   else if(reason==='zen') reasonText='🧘 Oturum tamamlandı · ';
   document.getElementById('finalScore').textContent=runScore;
-  document.getElementById('overStats').textContent=reasonText+'En iyi: '+stats.best+' · Seviye '+level;
+  const melodyOctave=Math.floor(session.streakMax/MELODY_SCALE.length);
+  const melodyText = melodyOctave>0 ? (' · Melodi: Oktav '+melodyOctave) : '';
+  document.getElementById('overStats').textContent=reasonText+'En iyi: '+stats.best+' · Seviye '+level+melodyText;
   document.getElementById('recordBadge').innerHTML = newRecord ? `<span class="badge">${icon('trophy')} YENİ REKOR!</span>` : '';
   const totalEarned = session.coins + scoreBonus;
   document.getElementById('coinsEarned').innerHTML = `${icon('coin')} +${totalEarned} <span style="opacity:.6;font-size:12px">(${session.coins} toplama + ${scoreBonus} puan bonusu)</span>`;

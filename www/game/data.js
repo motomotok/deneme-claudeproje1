@@ -141,9 +141,9 @@ function saveCfg(){ try{ localStorage.setItem('neonYorungeCfg', JSON.stringify(c
 function saveStats(){ try{ localStorage.setItem('neonYorungeStats', JSON.stringify(stats)); }catch(e){} }
 
 const DIFF = {
-  easy:{label:'Kolay', lives:4, hazBase:0.06, hazRamp:0.0003, hazCap:0.17, speedRamp:0.0009},
-  normal:{label:'Normal', lives:3, hazBase:0.08, hazRamp:0.0004, hazCap:0.21, speedRamp:0.0011},
-  hard:{label:'Zor', lives:2, hazBase:0.11, hazRamp:0.00055, hazCap:0.25, speedRamp:0.0014},
+  easy:{label:'Kolay', lives:4, hazBase:0.05, hazRamp:0.00025, hazCap:0.14, speedRamp:0.0007, speedCap:2.0, scoreMult:0.8},
+  normal:{label:'Normal', lives:3, hazBase:0.09, hazRamp:0.00045, hazCap:0.22, speedRamp:0.0011, speedCap:2.4, scoreMult:1.0},
+  hard:{label:'Zor', lives:2, hazBase:0.14, hazRamp:0.0008, hazCap:0.34, speedRamp:0.0016, speedCap:2.9, scoreMult:1.35},
 };
 let diffCfg = DIFF.normal;
 

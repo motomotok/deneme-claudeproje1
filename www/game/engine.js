@@ -52,8 +52,30 @@ function normAng(a){ a%=(Math.PI*2); if(a<0)a+=Math.PI*2; return a; }
 function angDiff(a,b){ let d=b-a; while(d>Math.PI)d-=Math.PI*2; while(d<-Math.PI)d+=Math.PI*2; return d; }
 function radiusFor(r){ return RINGS[r]; }
 function easeOut(t){ return 1-Math.pow(1-t,3); }
-function isHazardType(t){ return t==='hazard'||t==='hazardJump'||t==='hazardBomb'; }
+function isHazardType(t){ return t==='hazard'||t==='hazardJump'||t==='hazardBomb'||t==='hazardPull'||t==='hazardTwin'||t==='hazardPulse'; }
 function isPower(t){ return t==='shield'||t==='slow'||t==='magnet'||t==='freeze'||t==='mult'||t==='ghost'; }
+
+// Skor eşiklerinde açılan gelişmiş tehlike tipleri: eşiğe ulaşınca bir anda
+// hep-ya-da-hiç değil, eşikten ne kadar ileri gidersen ihtimali o kadar
+// artan (tavana kadar) kalıcı bir risk haline gelirler.
+const HAZARD_KINDS = [
+  {type:'hazard',     min:0,    rampPer:0,       cap:0.55},
+  {type:'hazardJump', min:0,    rampPer:0,       cap:0.27},
+  {type:'hazardBomb', min:0,    rampPer:0,       cap:0.18},
+  {type:'hazardPull', min:500,  rampPer:0.00012, cap:0.22},
+  {type:'hazardTwin', min:1000, rampPer:0.00012, cap:0.22},
+  {type:'hazardPulse',min:1500, rampPer:0.00012, cap:0.22},
+];
+function pickHazardKind(){
+  let total=0;
+  const weights=HAZARD_KINDS.map(h=>{
+    const w = h.min===0 ? h.cap : (score>=h.min ? Math.min(h.cap,(score-h.min)*h.rampPer) : 0);
+    total+=w; return w;
+  });
+  let r=rnd()*total;
+  for(let i=0;i<HAZARD_KINDS.length;i++){ r-=weights[i]; if(r<=0) return HAZARD_KINDS[i].type; }
+  return 'hazard';
+}
 
 function spawnItem(atAng){
   const zen = mode==='zen';
@@ -73,15 +95,20 @@ function spawnItem(atAng){
   let type; let r=rnd();
   if(session.luckyCharges>0 && r<hazChance){ session.luckyCharges--; r=hazChance; }
   if(r < hazChance){
-    const sub=rnd();
-    type = sub<0.55 ? 'hazard' : sub<0.82 ? 'hazardJump' : 'hazardBomb';
+    type = pickHazardKind();
   } else if(r < hazChance+0.03) type='diamond';
   else if(r < hazChance+0.08) type=PW[Math.floor(rnd()*PW.length)];
   else if(r < hazChance+0.14) type='coin';
   else if(r < hazChance+0.25) type='gold';
   else type='star';
   items.push({ang, ring, type, alive:true, pop:0, expiring:false, prevFwd:null,
-    jumpT: type==='hazardJump' ? 70+Math.random()*60 : 0});
+    jumpT: type==='hazardJump' ? 70+Math.random()*60 : 0,
+    pulsePhase: type==='hazardPulse' ? rnd()*Math.PI*2 : 0, pulseDanger:false});
+  if(type==='hazardTwin'){
+    const otherRings=[0,1,2].filter(x=>x!==ring);
+    const decoyRing=otherRings[Math.floor(rnd()*otherRings.length)];
+    items.push({ang, ring:decoyRing, type:'hazardTwinDecoy', alive:true, pop:0, expiring:false, prevFwd:null, jumpT:0});
+  }
 }
 
 function tap(x){
@@ -101,9 +128,12 @@ function burst(x,y,color,n,spd){
 function showFlash(text,dur){ levelFlashT=dur; document.getElementById('levelFlash').textContent=text; }
 
 function checkStreak(ix,iy,mult){
-  if(combo>0 && combo%5===0){
-    score+=20*mult; timeScale=0.3; timeScaleT=16;
-    showFlash('STREAK x'+combo+'!',50); burst(ix,iy,'#ffffff',18,5); beep(1000,0.08,'square',0.12);
+  if(combo>0 && combo%MELODY_SCALE.length===0){
+    const octave=combo/MELODY_SCALE.length;
+    score+=20*octave*mult; timeScale=0.3; timeScaleT=16;
+    showFlash('MELODİ x'+octave+'!',50); burst(ix,iy,'#ffffff',18,5);
+    const root=melodyFreq(combo-1);
+    beep(root,0.16,'triangle',0.16); beep(root*1.25,0.16,'sine',0.12); beep(root*1.5,0.18,'sine',0.10);
   }
 }
 
@@ -120,8 +150,16 @@ function update(dt){
 
   let speedMul = 1;
   if(player.freezeT>0) speedMul=0.04; else if(player.slowT>0) speedMul=0.5;
-  player.speed = 1.5 + (zen?0:Math.min(2.4, elapsed*diffCfg.speedRamp));
-  player.ang = normAng(player.ang + player.speed*speedMul*0.018*dt*timeScale);
+  player.speed = 1.5 + (zen?0:Math.min(diffCfg.speedCap, elapsed*diffCfg.speedRamp));
+  let pullMul=1;
+  if(!zen){
+    for(const it of items){
+      if(!it.alive || it.expiring || it.type!=='hazardPull' || it.ring!==player.targetRing) continue;
+      const fwd=normAng(it.ang-player.ang);
+      if(fwd>0 && fwd<0.85) pullMul=Math.max(pullMul, 1+(1-fwd/0.85)*0.55);
+    }
+  }
+  player.ang = normAng(player.ang + player.speed*speedMul*pullMul*0.018*dt*timeScale);
 
   const tR=radiusFor(player.targetRing);
   player.curRadius += (tR-player.curRadius)*Math.min(1,0.22*dt);
@@ -134,7 +172,7 @@ function update(dt){
   if(player.freezeT>0) player.freezeT-=dt;
   if(player.multT>0) player.multT-=dt;
   if(player.ghostT>0) player.ghostT-=dt;
-  const mult = player.multT>0 ? 2 : 1;
+  const mult = (player.multT>0 ? 2 : 1) * (diffCfg.scoreMult||1);
 
   spawnTimer-=dt;
   if(spawnTimer<=0){ spawnItem(); spawnTimer=Math.max(14, 40 - elapsed*0.011); }
@@ -146,6 +184,10 @@ function update(dt){
     if(it.type==='hazardJump' && !it.expiring){
       it.jumpT-=dt;
       if(it.jumpT<=0){ it.ring=(it.ring+(Math.random()<0.5?1:-1)+NUM_RINGS)%NUM_RINGS; it.jumpT=70+Math.random()*60; }
+    }
+    if(it.type==='hazardPulse' && !it.expiring){
+      it.pulsePhase += dt*0.045;
+      it.pulseDanger = Math.sin(it.pulsePhase) > 0.5;
     }
 
     const fwd=normAng(it.ang-player.ang);
@@ -163,16 +205,19 @@ function update(dt){
 
     if(isHazardType(it.type)){
       if(!sameRing) continue;
+      if(it.type==='hazardPulse' && !it.pulseDanger) continue;
       if(player.ghostT>0){ it.alive=false; burst(ix,iy,'#ffffff',10,3); continue; }
       if(player.invulT<=0){ it.alive=false; hitHazard(ix,iy,it.type); if(state!=='play') return; }
+    } else if(it.type==='hazardTwinDecoy'){
+      if(sameRing){ it.alive=false; burst(ix,iy,'#ffb27a',10,3); beep(300,0.05,'sine',0.06); }
     } else if(sameRing || (player.magnetT>0 && !isPower(it.type))){
       it.alive=false;
       if(it.type==='gold'){ combo++; score+=5*combo*mult; session.stars++; session.golds++; stats.golds++;
-        burst(ix,iy,T.gold,22,5); shake=6; beep(880,0.09,'triangle',0.14); beep(1320,0.10,'sine',0.10); bumpCombo(); checkStreak(ix,iy,mult); }
+        burst(ix,iy,T.gold,22,5); shake=6; beep(880,0.09,'triangle',0.14); beep(1320,0.10,'sine',0.10); playMelodyNote(combo,0.10); bumpCombo(); checkStreak(ix,iy,mult); }
       else if(it.type==='diamond'){ combo++; score+=(20+level*4)*mult; session.stars++; session.diamonds++; stats.diamonds++;
-        burst(ix,iy,'#eafcff',26,6); shake=8; beep(1200,0.1,'triangle',0.15); beep(1600,0.12,'sine',0.12); bumpCombo(); checkStreak(ix,iy,mult); }
+        burst(ix,iy,'#eafcff',26,6); shake=8; beep(1200,0.1,'triangle',0.15); beep(1600,0.12,'sine',0.12); playMelodyNote(combo,0.12); bumpCombo(); checkStreak(ix,iy,mult); }
       else if(it.type==='star'){ combo++; score+=combo*mult; session.stars++;
-        burst(ix,iy,T.star,14,4); shake=3; beep(660+combo*8,0.07,'sine',0.12); bumpCombo(); checkStreak(ix,iy,mult); }
+        burst(ix,iy,T.star,14,4); shake=3; playMelodyNote(combo,0.16); bumpCombo(); checkStreak(ix,iy,mult); }
       else if(it.type==='coin'){
         const gained=Math.round((3+Math.floor(rnd()*4))*session.stardustMult*weekendMult());
         addStardust(gained); session.coins+=gained; session.coinPickups++;
@@ -239,7 +284,7 @@ function activatePower(type,x,y){
   else if(type==='freeze'){ player.freezeT=FREEZE_DUR; freezeFlash=1; burst(x,y,'#7fe8ff',20,5); beep(500,0.18,'sine',0.13); }
   else if(type==='mult'){ player.multT=MULT_DUR; burst(x,y,'#ffd24a',20,5); beep(750,0.14,'triangle',0.13); }
   else if(type==='ghost'){ player.ghostT=GHOST_DUR; burst(x,y,'#ffffff',20,5); beep(450,0.16,'sine',0.13); }
-  score+=10; shake=6; vibrate(15);
+  score+=10*(diffCfg.scoreMult||1); shake=6; vibrate(15);
 }
 
 function bumpCombo(){

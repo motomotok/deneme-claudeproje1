@@ -64,7 +64,7 @@ function drawWorld(){
     for(const it of items){
       if(!it.alive) continue;
       const rad=radiusFor(it.ring);
-      drawItem(CX+Math.cos(it.ang)*rad, CY+Math.sin(it.ang)*rad, it.type, easeOut(Math.max(0,it.pop)), t);
+      drawItem(CX+Math.cos(it.ang)*rad, CY+Math.sin(it.ang)*rad, it.type, easeOut(Math.max(0,it.pop)), t, it);
     }
     drawPlayer(t);
   }
@@ -243,30 +243,53 @@ function drawPlayer(t){
   }
 }
 
-function drawItem(x,y,type,sc,t){
+function drawItem(x,y,type,sc,t,it){
   if(sc<=0) return;
   const R=(PLAYER_R*0.95)*sc;
+  const isTwinKind = type==='hazardTwin'||type==='hazardTwinDecoy';
   let col;
-  if(isHazardType(type)) col=T.peril;
+  if(type==='hazardPull') col='#a97bff';
+  else if(isTwinKind) col='#ff8a3d';
+  else if(type==='hazardPulse') col = (it && it.pulseDanger===false) ? '#ffd9dc' : '#ff3b52';
+  else if(isHazardType(type)) col=T.peril;
   else if(type==='gold') col=T.gold;
   else if(type==='star') col=T.star;
   else if(type==='diamond') col='#eafcff';
   else if(type==='coin') col='#ffb454';
   else col='#ffffff';
+  const glowAlpha = type==='hazardTwinDecoy' ? 0.3+Math.sin(t*9)*0.15 : 0.6;
   const g=ctx.createRadialGradient(x,y,0,x,y,R*2.4);
-  g.addColorStop(0, hexA(col,.6)); g.addColorStop(1,'rgba(0,0,0,0)');
+  g.addColorStop(0, hexA(col,glowAlpha)); g.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,R*2.4,0,7); ctx.fill();
 
-  if(isHazardType(type)){
-    const Rh = type==='hazardBomb' ? R*1.5 : R;
+  if(isHazardType(type) || type==='hazardTwinDecoy'){
+    let Rh = type==='hazardBomb' ? R*1.5 : R;
+    let shapeAlpha = type==='hazardTwinDecoy' ? 0.4+Math.sin(t*9)*0.25 : 1;
+    if(type==='hazardPulse'){
+      const danger = it ? it.pulseDanger : true;
+      const phase = it ? it.pulsePhase : 0;
+      Rh = R*(0.55+(Math.sin(phase)*0.5+0.5)*0.85);
+      if(!danger) shapeAlpha=0.55;
+    }
+    ctx.globalAlpha=shapeAlpha;
     ctx.fillStyle=col; ctx.beginPath();
     const sp=7;
     for(let i=0;i<sp*2;i++){ const rr=i%2?Rh*0.6:Rh*1.25; const a=t*1.4+i*Math.PI/sp;
       const xx=x+Math.cos(a)*rr, yy=y+Math.sin(a)*rr; i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); }
     ctx.closePath(); ctx.fill();
+    ctx.globalAlpha=1;
     if(type==='hazardJump'){
       ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.setLineDash([3,5]); ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.arc(x,y,Rh*1.6,0,7); ctx.stroke(); ctx.setLineDash([]);
+    } else if(type==='hazardPull'){
+      ctx.save(); ctx.translate(x,y); ctx.rotate(-t*2.2);
+      ctx.strokeStyle=hexA('#a97bff',.55); ctx.setLineDash([2,4]); ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(0,0,Rh*1.7,0,7); ctx.stroke(); ctx.setLineDash([]);
+      ctx.restore();
+    } else if(isTwinKind){
+      ctx.fillStyle='rgba(255,255,255,.7)';
+      ctx.beginPath(); ctx.arc(x-Rh*0.55,y-Rh*0.75,Rh*0.22,0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(x+Rh*0.55,y-Rh*0.75,Rh*0.22,0,7); ctx.fill();
     }
   } else if(type==='gold'){
     drawStar(x,y,R*1.2,R*0.55,5,t*1.2,col);
