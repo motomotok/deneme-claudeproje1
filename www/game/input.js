@@ -111,4 +111,28 @@ window.addEventListener('resize', ()=>{ resize(); initStars(); });
 
 if('serviceWorker' in navigator && location.protocol==='https:'){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+  // Yeni bir service worker devreye girdiğinde (güncelleme yayınlandığında)
+  // sayfayı bir kez otomatik yeniler — kullanıcı elle önbellek temizlemek
+  // zorunda kalmadan en güncel sürümü görür.
+  let swRefreshed=false;
+  navigator.serviceWorker.addEventListener('controllerchange', ()=>{
+    if(swRefreshed) return; swRefreshed=true; location.reload();
+  });
 }
+async function clearAppCache(){
+  try{
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r=>r.unregister()));
+    }
+    if(window.caches){
+      const keys=await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+    queueToast(icon('check')+' Önbellek temizlendi, yenileniyor…');
+    setTimeout(()=>location.reload(true), 400);
+  }catch(e){
+    queueToast('Önbellek temizlenemedi, tekrar dene.');
+  }
+}
+document.getElementById('clearCacheBtn').addEventListener('click', e=>{ e.stopPropagation(); clearAppCache(); });
