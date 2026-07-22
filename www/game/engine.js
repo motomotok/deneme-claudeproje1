@@ -257,8 +257,8 @@ function updateHud(){
   const comboText='x'+combo;
   if(_hud.combo!==comboText){ document.getElementById('combo').textContent=comboText; _hud.combo=comboText; }
   if(_hud.level!==level){ document.getElementById('levelHud').textContent=level; _hud.level=level; }
-  const livesText = mode==='zen' ? '∞' : (lives>0 ? '❤'.repeat(lives) : '');
-  if(_hud.lives!==livesText){ document.getElementById('lives').textContent=livesText; _hud.lives=livesText; }
+  const livesText = mode==='zen' ? '∞' : (lives>0 ? icon('heart').repeat(lives) : '');
+  if(_hud.lives!==livesText){ document.getElementById('lives').innerHTML=livesText; _hud.lives=livesText; }
   const isTime = mode==='time';
   if(_hud.isTime!==isTime){
     document.getElementById('timerLbl').style.display = isTime?'block':'none';
@@ -272,16 +272,16 @@ function updateHud(){
     if(_hud.timer!==timerText){ document.getElementById('timerHud').textContent=timerText; _hud.timer=timerText; }
   }
   let html='';
-  if(player.shield) html+=`<div class="pwchip">🛡️</div>`;
-  if(player.slowT>0) html+=chip('⏱️', player.slowT/SLOW_DUR);
-  if(player.magnetT>0) html+=chip('🧲', player.magnetT/MAGNET_DUR);
-  if(player.freezeT>0) html+=chip('⏳', player.freezeT/FREEZE_DUR);
-  if(player.multT>0) html+=chip('💰', player.multT/MULT_DUR);
-  if(player.ghostT>0) html+=chip('👻', player.ghostT/GHOST_DUR);
+  if(player.shield) html+=`<div class="pwchip">${icon('shield')}</div>`;
+  if(player.slowT>0) html+=chip('clock', player.slowT/SLOW_DUR);
+  if(player.magnetT>0) html+=chip('magnet', player.magnetT/MAGNET_DUR);
+  if(player.freezeT>0) html+=chip('hourglass', player.freezeT/FREEZE_DUR);
+  if(player.multT>0) html+=chip('coin', player.multT/MULT_DUR);
+  if(player.ghostT>0) html+=chip('ghost', player.ghostT/GHOST_DUR);
   if(_hud.pw!==html){ document.getElementById('pw').innerHTML=html; _hud.pw=html; }
   const flashOpacity = levelFlashT>0 ? Math.min(1, levelFlashT/20) : 0;
   if(_hud.flash!==flashOpacity){ document.getElementById('levelFlash').style.opacity=flashOpacity; _hud.flash=flashOpacity; }
   const wallet = stats.stardust||0;
   if(_hud.wallet!==wallet){ document.getElementById('walletHud').textContent=wallet; _hud.wallet=wallet; }
 }
-function chip(icon,frac){ return `<div class="pwchip">${icon}<div class="pwbar"><i style="width:${Math.max(0,frac)*100}%"></i></div></div>`; }
+function chip(iconKey,frac){ return `<div class="pwchip">${icon(iconKey)}<div class="pwbar"><i style="width:${Math.max(0,frac)*100}%"></i></div></div>`; }

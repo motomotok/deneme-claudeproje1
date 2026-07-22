@@ -1,5 +1,6 @@
 // Bootstrap: tüm modüller yüklendikten sonra tek seferlik başlatma çağrıları.
 // Bu dosya her zaman script sırasının EN SONUNDA yer almalı.
+hydrateIcons();
 resize(); initStars(); applyTheme(cfg.theme); applyAccessibility(); ensureTodayQuest(); handleDailyReturn(); resetGame(); renderThemeGrid(); goMenu();
 Ads.init();
 if(window.PlayGames && PlayGames.isNative()){

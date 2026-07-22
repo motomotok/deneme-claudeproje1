@@ -80,9 +80,9 @@ function gameOver(reason){
   else if(reason==='zen') reasonText='🧘 Oturum tamamlandı · ';
   document.getElementById('finalScore').textContent=runScore;
   document.getElementById('overStats').textContent=reasonText+'En iyi: '+stats.best+' · Seviye '+level;
-  document.getElementById('recordBadge').innerHTML = newRecord ? '<span class="badge">🏆 YENİ REKOR!</span>' : '';
+  document.getElementById('recordBadge').innerHTML = newRecord ? `<span class="badge">${icon('trophy')} YENİ REKOR!</span>` : '';
   const totalEarned = session.coins + scoreBonus;
-  document.getElementById('coinsEarned').innerHTML = `🪙 +${totalEarned} <span style="opacity:.6;font-size:12px">(${session.coins} toplama + ${scoreBonus} puan bonusu)</span>`;
+  document.getElementById('coinsEarned').innerHTML = `${icon('coin')} +${totalEarned} <span style="opacity:.6;font-size:12px">(${session.coins} toplama + ${scoreBonus} puan bonusu)</span>`;
   setHud(false); showScreen('over');
   beep(200,0.3,'sine',0.12);
   if(!stats.premiumNoAds){

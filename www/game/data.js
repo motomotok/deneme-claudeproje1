@@ -74,10 +74,10 @@ const RINGSTYLES = [
   {id:'circuit', name:'Devre',      gate:{type:'coin', price:400}},
 ];
 const BOOSTS = [
-  {id:'shieldstart', name:'Kalkanla Başla', desc:'Oyuna kalkan aktifken başlarsın', icon:'🛡️', price:130},
-  {id:'slowstart',   name:'Yavaş Açılış',   desc:'İlk saniyelerde orb yavaş döner', icon:'⏳', price:100},
-  {id:'luckystart',  name:'Şanslı Açılış',  desc:'İlk 3 tehlikeli an güvenliye çevrilir', icon:'🍀', price:110},
-  {id:'coinrush',    name:'Toz Rüzgarı',    desc:'Bu oyunda kazanılan yıldız tozu %50 fazla', icon:'💫', price:160},
+  {id:'shieldstart', name:'Kalkanla Başla', desc:'Oyuna kalkan aktifken başlarsın', icon:'shield', price:130},
+  {id:'slowstart',   name:'Yavaş Açılış',   desc:'İlk saniyelerde orb yavaş döner', icon:'hourglass', price:100},
+  {id:'luckystart',  name:'Şanslı Açılış',  desc:'İlk 3 tehlikeli an güvenliye çevrilir', icon:'clover', price:110},
+  {id:'coinrush',    name:'Toz Rüzgarı',    desc:'Bu oyunda kazanılan yıldız tozu %50 fazla', icon:'sparkle', price:160},
 ];
 
 function isUnlockedItem(category, item){
@@ -261,18 +261,18 @@ function ensureTodayQuest(){
 function currentQuest(){ return QUEST_POOL.find(q=>q.id===stats.questId)||QUEST_POOL[0]; }
 
 const ACHIEVEMENTS = [
-  {id:'first', icon:'🌟', name:'İlk Adım', desc:'İlk oyununu tamamla', reward:50, check:(s)=>s.games>=1},
-  {id:'hundred', icon:'💯', name:'Yüzler Kulübü', desc:'Tek oyunda 100+ puan yap', reward:80, check:(s,c)=>c.runScore>=100},
-  {id:'lvl5', icon:'🚀', name:'Hızlı Başlangıç', desc:'5. seviyeye ulaş', reward:100, check:(s,c)=>c.level>=5},
-  {id:'shield', icon:'🛡️', name:'Zırhlı', desc:'Kalkanla bir çarpışmayı savuştur', reward:80, check:(s,c)=>c.session.shieldSaved},
-  {id:'magnetmaster', icon:'🧲', name:'Mıknatıs Ustası', desc:'Toplam 10 mıknatıs topla', reward:120, check:(s)=>s.magnets>=10},
-  {id:'diamondhunter', icon:'💎', name:'Elmas Avcısı', desc:'Toplam 5 elmas topla', reward:150, check:(s)=>s.diamonds>=5},
-  {id:'combo15', icon:'🔥', name:'Kombo Kralı', desc:'Tek oyunda 15 combo yap', reward:120, check:(s,c)=>c.session.streakMax>=15},
-  {id:'zenmaster', icon:'🌙', name:'Zen Ustası', desc:'Zen modda 2 dakika oyna', reward:100, check:(s,c)=>c.mode==='zen' && c.elapsedSec>=120},
-  {id:'dailyexplorer', icon:'📅', name:'Günlük Kaşif', desc:'Bir günlük mücadeleyi tamamla', reward:100, check:(s)=>s.dailyCount>=1},
-  {id:'legend', icon:'🏆', name:'Efsane', desc:'En iyi skorun 500+ olsun', reward:300, check:(s)=>s.best>=500},
-  {id:'richling', icon:'💰', name:'Yıldız Tozu Zengini', desc:'Toplamda 1000 yıldız tozu biriktir', reward:150, check:(s)=>s.lifetimeStardust>=1000},
-  {id:'collector', icon:'🎨', name:'Koleksiyoncu', desc:'5 kozmetik eşya satın al', reward:200, check:(s)=>Object.values(s.owned).reduce((n,arr)=>n+arr.length,0)>=5},
+  {id:'first', icon:'star', name:'İlk Adım', desc:'İlk oyununu tamamla', reward:50, check:(s)=>s.games>=1},
+  {id:'hundred', icon:'star', name:'Yüzler Kulübü', desc:'Tek oyunda 100+ puan yap', reward:80, check:(s,c)=>c.runScore>=100},
+  {id:'lvl5', icon:'rocket', name:'Hızlı Başlangıç', desc:'5. seviyeye ulaş', reward:100, check:(s,c)=>c.level>=5},
+  {id:'shield', icon:'shield', name:'Zırhlı', desc:'Kalkanla bir çarpışmayı savuştur', reward:80, check:(s,c)=>c.session.shieldSaved},
+  {id:'magnetmaster', icon:'magnet', name:'Mıknatıs Ustası', desc:'Toplam 10 mıknatıs topla', reward:120, check:(s)=>s.magnets>=10},
+  {id:'diamondhunter', icon:'gem', name:'Elmas Avcısı', desc:'Toplam 5 elmas topla', reward:150, check:(s)=>s.diamonds>=5},
+  {id:'combo15', icon:'flame', name:'Kombo Kralı', desc:'Tek oyunda 15 combo yap', reward:120, check:(s,c)=>c.session.streakMax>=15},
+  {id:'zenmaster', icon:'moon', name:'Zen Ustası', desc:'Zen modda 2 dakika oyna', reward:100, check:(s,c)=>c.mode==='zen' && c.elapsedSec>=120},
+  {id:'dailyexplorer', icon:'calendar', name:'Günlük Kaşif', desc:'Bir günlük mücadeleyi tamamla', reward:100, check:(s)=>s.dailyCount>=1},
+  {id:'legend', icon:'trophy', name:'Efsane', desc:'En iyi skorun 500+ olsun', reward:300, check:(s)=>s.best>=500},
+  {id:'richling', icon:'coin', name:'Yıldız Tozu Zengini', desc:'Toplamda 1000 yıldız tozu biriktir', reward:150, check:(s)=>s.lifetimeStardust>=1000},
+  {id:'collector', icon:'palette', name:'Koleksiyoncu', desc:'5 kozmetik eşya satın al', reward:200, check:(s)=>Object.values(s.owned).reduce((n,arr)=>n+arr.length,0)>=5},
 ];
 function checkAchievements(c){
   const newly=[];
@@ -280,7 +280,7 @@ function checkAchievements(c){
     if(stats.unlocked.includes(a.id)) continue;
     if(a.check(stats,c)){ stats.unlocked.push(a.id); addStardust(a.reward); newly.push(a); }
   }
-  if(newly.length){ saveStats(); newly.forEach(a=>queueToast(a.icon+' Başarı: '+a.name+'  +'+a.reward+' 🪙')); }
+  if(newly.length){ saveStats(); newly.forEach(a=>queueToast(icon(a.icon)+' Başarı: '+a.name+'  +'+a.reward+' '+icon('coin'))); }
 }
 function addStardust(n){
   stats.stardust += n; stats.lifetimeStardust = (stats.lifetimeStardust||0) + n;

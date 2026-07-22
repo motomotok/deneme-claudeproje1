@@ -198,7 +198,9 @@ h2{font-family:var(--font-display);font-size:clamp(21px,5.8vw,32px);font-weight:
 .val{font-family:var(--font-display);font-size:clamp(22px,6vw,34px);font-weight:700;text-shadow:0 0 18px rgba(120,200,255,.35);}
 #combo{color:var(--gold);text-shadow:0 0 20px rgba(255,210,74,.5);transition:transform .1s;}
 .center{text-align:center;}
-#lives{font-size:20px;letter-spacing:2px;margin-top:2px;filter:drop-shadow(0 0 8px rgba(255,80,110,.6));}
+#lives{font-size:20px;letter-spacing:2px;margin-top:2px;color:var(--peril);
+  filter:drop-shadow(0 0 8px rgba(255,80,110,.6));display:flex;gap:2px;}
+#lives .gicon{filter:none;}
 #pw{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 92px);
   display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
 .pwchip{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);border-radius:999px;
@@ -289,6 +291,12 @@ body.left-hand #walletChip{left:18px;right:auto;}
 .ringPreview.glow{box-shadow:0 0 14px #8ecdfa,0 0 3px #8ecdfa inset;border-color:rgba(142,205,250,.5);}
 .ringPreview.double{border-style:double;border-width:7px;}
 .trailPreview{display:flex;align-items:center;gap:3px;height:44px;}
+
+.gicon{width:1em;height:1em;display:inline-flex;flex:none;vertical-align:-0.15em;
+  filter:drop-shadow(0 0 4px currentColor);}
+.gicon svg{width:100%;height:100%;overflow:visible;}
+.btn .gicon,.acctCard .gicon,.stab .gicon{margin-right:5px;}
+h1 .gicon,h2 .gicon{color:var(--star);}
 
 @media (hover:hover) and (pointer:fine){
   .btn:hover{filter:brightness(1.06);}

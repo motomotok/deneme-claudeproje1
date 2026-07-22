@@ -7,12 +7,12 @@ function syncSeasonPassUI(price){
   const btn=document.getElementById('seasonPassBuyBtn');
   if(!txt || !btn) return;
   if(stats.seasonPremium){
-    txt.textContent='✅ Sezon Bileti aktif — bu ay premium ödülleri alabilirsin!';
+    txt.innerHTML=icon('check')+' Sezon Bileti aktif — bu ay premium ödülleri alabilirsin!';
     btn.style.display='none';
   } else {
-    txt.textContent='🎫 Premium çizgi ile daha büyük ödüller';
+    txt.innerHTML=icon('ticket')+' Premium çizgi ile daha büyük ödüller';
     btn.style.display='inline-block';
-    btn.textContent='🎫 Sezon Bileti — '+(price || (window.SeasonPass ? SeasonPass.FALLBACK_PRICE_TEXT : '29 TL'));
+    btn.innerHTML=icon('ticket')+' Sezon Bileti — '+(price || (window.SeasonPass ? SeasonPass.FALLBACK_PRICE_TEXT : '29 TL'));
   }
 }
 
@@ -31,18 +31,18 @@ function renderBattlepass(){
 
     const freeBtn=document.createElement('button');
     freeBtn.className='bpChip'+(freeClaimed?' claimed':reached?' claimable':' locked');
-    if(freeClaimed){ freeBtn.textContent='✅ '+tier.free+' 🪙'; freeBtn.disabled=true; }
-    else if(reached){ freeBtn.textContent='🎁 '+tier.free+' 🪙'; freeBtn.addEventListener('click', ()=>{ if(claimSeasonTier(i,'free')) renderBattlepass(); }); }
-    else { freeBtn.textContent='🔒 '+tier.free+' 🪙'; freeBtn.disabled=true; }
+    if(freeClaimed){ freeBtn.innerHTML=icon('check')+' '+tier.free+' '+icon('coin'); freeBtn.disabled=true; }
+    else if(reached){ freeBtn.innerHTML=icon('gift')+' '+tier.free+' '+icon('coin'); freeBtn.addEventListener('click', ()=>{ if(claimSeasonTier(i,'free')) renderBattlepass(); }); }
+    else { freeBtn.innerHTML=icon('lock')+' '+tier.free+' '+icon('coin'); freeBtn.disabled=true; }
     tile.appendChild(freeBtn);
 
     const premBtn=document.createElement('button');
-    const premLabel = tier.premiumCosmetic ? ('+'+tier.premium+' 🪙 🎨') : ('+'+tier.premium+' 🪙');
+    const premLabel = tier.premiumCosmetic ? ('+'+tier.premium+' '+icon('coin')+' '+icon('palette')) : ('+'+tier.premium+' '+icon('coin'));
     premBtn.className='bpChip premium'+((!stats.seasonPremium)?' locked':premClaimed?' claimed':reached?' claimable':' locked');
-    if(!stats.seasonPremium){ premBtn.textContent='🎫 '+premLabel; premBtn.disabled=true; }
-    else if(premClaimed){ premBtn.textContent='✅ '+premLabel; premBtn.disabled=true; }
-    else if(reached){ premBtn.textContent='🎁 '+premLabel; premBtn.addEventListener('click', ()=>{ if(claimSeasonTier(i,'premium')) renderBattlepass(); }); }
-    else { premBtn.textContent='🔒 '+premLabel; premBtn.disabled=true; }
+    if(!stats.seasonPremium){ premBtn.innerHTML=icon('ticket')+' '+premLabel; premBtn.disabled=true; }
+    else if(premClaimed){ premBtn.innerHTML=icon('check')+' '+premLabel; premBtn.disabled=true; }
+    else if(reached){ premBtn.innerHTML=icon('gift')+' '+premLabel; premBtn.addEventListener('click', ()=>{ if(claimSeasonTier(i,'premium')) renderBattlepass(); }); }
+    else { premBtn.innerHTML=icon('lock')+' '+premLabel; premBtn.disabled=true; }
     tile.appendChild(premBtn);
 
     wrap.appendChild(tile);

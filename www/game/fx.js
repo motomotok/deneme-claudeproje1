@@ -21,6 +21,6 @@ function pumpToast(){
   if(toastShowing || !toastQueue.length) return;
   toastShowing=true;
   const el=document.getElementById('toast');
-  el.textContent=toastQueue.shift(); el.classList.add('show');
+  el.innerHTML=toastQueue.shift(); el.classList.add('show');
   setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>{ toastShowing=false; pumpToast(); },300); },2400);
 }

@@ -26,18 +26,18 @@ function syncPlayGamesUI(){
   }
   card.style.display='flex';
   if(row) row.classList.remove('single');
-  if(PlayGames.signedIn){ txt.textContent='✅ Bağlandın!'; btn.textContent='Skor Tablosu'; }
-  else { txt.textContent='🏆 Play Games'; btn.textContent='Bağlan'; }
+  if(PlayGames.signedIn){ txt.innerHTML=icon('check')+' Bağlandın!'; btn.textContent='Skor Tablosu'; }
+  else { txt.innerHTML=icon('trophy')+' Play Games'; btn.textContent='Bağlan'; }
 }
 function syncPremiumUI(price){
   const txt=document.getElementById('premiumStatusText');
   const btn=document.getElementById('premiumBuyBtn');
   if(!txt || !btn) return;
   if(stats.premiumNoAds){
-    txt.textContent='✅ Premium aktif!';
+    txt.innerHTML=icon('check')+' Premium aktif!';
     btn.style.display='none';
   } else {
-    txt.textContent='💎 Reklamsız Premium';
+    txt.innerHTML=icon('gem')+' Reklamsız Premium';
     btn.style.display='inline-block';
     btn.textContent=price || (window.Premium ? Premium.FALLBACK_PRICE_TEXT : '49 TL');
   }
@@ -68,7 +68,7 @@ function renderRivalLeague(){
   el.innerHTML = stats.rivalLeague.map(r=>{
     const beaten = stats.best>=r.score;
     return `<div class="row" style="${beaten?'opacity:.55':''}">
-      <span class="k">${beaten?'✅':'🎯'} ${turkishAccusative(r.name)} geç</span>
+      <span class="k">${beaten?icon('check'):icon('target')} ${turkishAccusative(r.name)} geç</span>
       <span class="v">${r.score}</span>
     </div>`;
   }).join('');
@@ -93,7 +93,7 @@ function renderAchievements(){
     const d=document.createElement('div');
     d.className='achItem'+(unlocked?' unlocked':'');
     d.title=a.desc;
-    d.innerHTML=`<div class="ic">${a.icon}</div><div>${a.name}</div>`;
+    d.innerHTML=`<div class="ic">${icon(a.icon)}</div><div>${a.name}</div>`;
     grid.appendChild(d);
   });
   document.getElementById('achCount').textContent=count;
@@ -148,15 +148,15 @@ function purchase(category, item){
 function renderDealBanner(){
   const el=document.getElementById('dealBanner'); if(!el) return;
   const deal=activeDeal();
-  el.textContent = deal ? ('🔥 Günün Fırsatı: '+deal.item.name+' %'+Math.round(DEAL_DISCOUNT*100)+' indirimli!') : '';
+  el.innerHTML = deal ? (icon('flame')+' Günün Fırsatı: '+deal.item.name+' %'+Math.round(DEAL_DISCOUNT*100)+' indirimli!') : '';
 }
 
 let pendingPurchase = null;
-function showPurchaseConfirm(icon, name, price, onYes){
+function showPurchaseConfirm(iconKey, name, price, onYes){
   pendingPurchase = onYes;
-  document.getElementById('pcIcon').textContent = icon;
+  document.getElementById('pcIcon').innerHTML = icon(iconKey);
   document.getElementById('pcName').textContent = name;
-  document.getElementById('pcPrice').textContent = '🪙 '+price;
+  document.getElementById('pcPrice').innerHTML = icon('coin')+' '+price;
   document.getElementById('purchaseConfirmOverlay').style.display = 'flex';
   beep(500,0.05,'sine',0.08);
 }
@@ -169,7 +169,7 @@ function onShopCardClick(category, item){
   const unlocked = isUnlockedItem(category, item);
   if(!unlocked){
     if(item.gate.type==='coin'){
-      showPurchaseConfirm('🎨', item.name, effectivePrice(category,item), ()=>{
+      showPurchaseConfirm('palette', item.name, effectivePrice(category,item), ()=>{
         if(purchase(category,item)) setEquipped(category, item.id);
         renderSkins(); renderThemeGrid(); syncShopIfOpen();
       });
@@ -235,15 +235,15 @@ function renderShopGrid(category){
     if(!unlocked && item.gate.type==='coin'){
       const isDeal = category===stats.dealCategory && item.id===stats.dealId;
       priceHtml = isDeal
-        ? `<div class="price">🔥 <s style="opacity:.6">${item.gate.price}</s> 🪙 ${effectivePrice(category,item)}</div>`
-        : `<div class="price">🪙 ${item.gate.price}</div>`;
+        ? `<div class="price">${icon('flame')} <s style="opacity:.6">${item.gate.price}</s> ${icon('coin')} ${effectivePrice(category,item)}</div>`
+        : `<div class="price">${icon('coin')} ${item.gate.price}</div>`;
     }
     else if(!unlocked && item.gate.type==='achievement'){
       const ach=ACHIEVEMENTS.find(a=>a.id===item.gate.id);
-      priceHtml=`<div class="price lockreq">🔒 ${ach?ach.name:''}</div>`;
+      priceHtml=`<div class="price lockreq">${icon('lock')} ${ach?ach.name:''}</div>`;
     } else if(!unlocked && item.gate.type==='seasonpass'){
-      priceHtml=`<div class="price lockreq">🎫 Sezon Ödülü</div>`;
-    } else if(equipped) priceHtml=`<div class="price ok">✓ Takılı</div>`;
+      priceHtml=`<div class="price lockreq">${icon('ticket')} Sezon Ödülü</div>`;
+    } else if(equipped) priceHtml=`<div class="price ok">${icon('check')} Takılı</div>`;
     else priceHtml=`<div class="price ok">Sahip</div>`;
     card.innerHTML = swatchHtml(category,item)+`<div class="cn">${item.name}</div>`+priceHtml;
     card.addEventListener('click', ()=>onShopCardClick(category,item));
@@ -255,7 +255,7 @@ function renderBoostsShop(){
   BOOSTS.forEach(b=>{
     const owned=stats.boosts[b.id]||0;
     const card=document.createElement('div'); card.className='shopCard boostCard';
-    card.innerHTML = `<div class="boostIcon">${b.icon}</div><div class="cn">${b.name}</div><div class="bdesc">${b.desc}</div><div class="price">🪙 ${b.price}</div><div class="ownedTag">Envanter: ${owned}</div>`;
+    card.innerHTML = `<div class="boostIcon">${icon(b.icon)}</div><div class="cn">${b.name}</div><div class="bdesc">${b.desc}</div><div class="price">${icon('coin')} ${b.price}</div><div class="ownedTag">Envanter: ${owned}</div>`;
     card.addEventListener('click', ()=>{
       if(stats.stardust<b.price){ queueToast('🪙 Yetersiz Yıldız Tozu'); beep(200,0.1,'square',0.1); return; }
       showPurchaseConfirm(b.icon, b.name, b.price, ()=>{
@@ -309,8 +309,8 @@ function renderThemeGrid(){
     const themeIsDeal = !unlocked && stats.dealCategory==='themes' && stats.dealId===key;
     const priceTag = !unlocked
       ? (themeIsDeal
-        ? `<div class="price" style="font-size:10.5px;color:#ffd28a;margin-top:2px">🔥 <s style="opacity:.6">${t.gate.price}</s> 🪙 ${effectivePrice('themes',item)}</div>`
-        : `<div class="price" style="font-size:10.5px;color:#ffd28a;margin-top:2px">🪙 ${t.gate.price}</div>`)
+        ? `<div class="price" style="font-size:10.5px;color:#ffd28a;margin-top:2px">${icon('flame')} <s style="opacity:.6">${t.gate.price}</s> ${icon('coin')} ${effectivePrice('themes',item)}</div>`
+        : `<div class="price" style="font-size:10.5px;color:#ffd28a;margin-top:2px">${icon('coin')} ${t.gate.price}</div>`)
       : '';
     d.innerHTML=`<div class="swatch"><span style="background:${t.star}"></span><span style="background:${t.gold}"></span><span style="background:${t.peril}"></span><span style="background:${t.player}"></span></div><div class="tn">${t.name}</div>${priceTag}`;
     d.addEventListener('click', ()=>onShopCardClick('themes', item));

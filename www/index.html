@@ -21,7 +21,7 @@
 <div id="hud">
   <div class="hudTop">
     <div><div class="lbl">Puan</div><div class="val" id="scoreHud">0</div>
-      <div id="lives">❤❤❤</div></div>
+      <div id="lives"></div></div>
     <div class="center">
       <div class="lbl" id="levelLbl">Seviye</div><div class="val" id="levelHud">1</div>
       <div class="lbl" id="timerLbl" style="display:none">Süre</div><div class="val" id="timerHud" style="display:none">60</div>
@@ -29,8 +29,8 @@
     <div style="text-align:right"><div class="lbl">Combo</div><div class="val" id="combo">x1</div></div>
   </div>
   <div id="pw"></div>
-  <button id="pauseBtn">⏸</button>
-  <div id="walletChip">🪙 <span id="walletHud">0</span></div>
+  <button id="pauseBtn"><i class="gicon" data-icon="pause"></i></button>
+  <div id="walletChip"><i class="gicon" data-icon="coin"></i> <span id="walletHud">0</span></div>
 </div>
 <div id="levelFlash"></div>
 <div class="hint" id="hint">SOL → iç halka &nbsp;·&nbsp; SAĞ → dış halka</div>
@@ -40,12 +40,12 @@
   <div class="screen active" id="screen-menu">
     <h1>NEON<br>YÖRÜNGE</h1>
     <div class="sub">Halkalar arasında dans et, yıldızları topla, evreni geç.</div>
-    <div class="walletBig">🪙 <span id="menuWallet">0</span></div>
+    <div class="walletBig"><i class="gicon" data-icon="coin"></i> <span id="menuWallet">0</span></div>
     <div class="col">
-      <button class="btn" data-go="mode">▶ OYNA</button>
+      <button class="btn" data-go="mode"><i class="gicon" data-icon="play"></i> OYNA</button>
       <div class="menuGrid2">
-        <button class="btn alt small" data-go="shop">🛒 MAĞAZA</button>
-        <button class="btn alt small" data-go="battlepass">🎫 SEZON</button>
+        <button class="btn alt small" data-go="shop"><i class="gicon" data-icon="cart"></i> MAĞAZA</button>
+        <button class="btn alt small" data-go="battlepass"><i class="gicon" data-icon="ticket"></i> SEZON</button>
         <button class="btn alt small" data-go="settings">AYARLAR</button>
         <button class="btn alt small" data-go="stats">İSTATİSTİKLER</button>
       </div>
@@ -60,10 +60,10 @@
   <div class="screen" id="screen-mode">
     <h2>Mod Seç</h2>
     <div class="modeGrid" id="modeGrid">
-      <div class="modeCard sel" data-mode="classic"><div class="mi">🌌</div><div class="mn">Klasik</div><div class="md">Canlarla sonsuz mod</div></div>
-      <div class="modeCard" data-mode="time"><div class="mi">⏱️</div><div class="mn">Zaman Yarışı</div><div class="md">60 sn'de en yüksek skor</div></div>
-      <div class="modeCard" data-mode="zen"><div class="mi">🧘</div><div class="mn">Zen</div><div class="md">Asteroit yok, sadece topla</div></div>
-      <div class="modeCard" data-mode="daily"><div class="mi">📅</div><div class="mn">Günlük</div><div class="md" id="dailyStatus">Herkes aynı düzen, tek deneme</div></div>
+      <div class="modeCard sel" data-mode="classic"><div class="mi gicon" data-icon="orbit"></div><div class="mn">Klasik</div><div class="md">Canlarla sonsuz mod</div></div>
+      <div class="modeCard" data-mode="time"><div class="mi gicon" data-icon="clock"></div><div class="mn">Zaman Yarışı</div><div class="md">60 sn'de en yüksek skor</div></div>
+      <div class="modeCard" data-mode="zen"><div class="mi gicon" data-icon="moon"></div><div class="mn">Zen</div><div class="md">Asteroit yok, sadece topla</div></div>
+      <div class="modeCard" data-mode="daily"><div class="mi gicon" data-icon="calendar"></div><div class="mn">Günlük</div><div class="md" id="dailyStatus">Herkes aynı düzen, tek deneme</div></div>
     </div>
     <div class="sub">Zorluk</div>
     <div class="diffRow" id="diffRow">
@@ -73,8 +73,8 @@
     </div>
     <div class="sub" style="margin-top:2px">Takviye <span style="opacity:.6">(mağazadan satın al)</span></div>
     <div class="row2" id="boostRow"></div>
-    <button class="btn" id="modeStartBtn">▶ BAŞLA</button>
-    <button class="btn alt small" data-go="menu">◀ Geri</button>
+    <button class="btn" id="modeStartBtn"><i class="gicon" data-icon="play"></i> BAŞLA</button>
+    <button class="btn alt small" data-go="menu"><i class="gicon" data-icon="back"></i> Geri</button>
   </div>
 
   <div class="screen" id="screen-howto">
@@ -99,7 +99,7 @@
     <div class="card">
       🪙 <b>Yıldız Tozu:</b> Oyun içinde beliren bakır-altın renkli jetonları topla. Ayrıca her oyun sonunda puanına göre bonus yıldız tozu kazanırsın. 🛒 <b>Kozmik Mağaza'</b>dan temalar, orb renkleri, iz efektleri, güneş görünümleri, halka stilleri ve tek kullanımlık başlangıç takviyeleri satın alabilirsin.
     </div>
-    <button class="btn alt small" data-go="menu">◀ Geri</button>
+    <button class="btn alt small" data-go="menu"><i class="gicon" data-icon="back"></i> Geri</button>
   </div>
 
   <div class="screen" id="screen-settings">
@@ -112,11 +112,11 @@
     </div>
     <div class="acctRow" id="acctRow">
       <div class="acctCard" id="premiumCard">
-        <div class="acctStatus" id="premiumStatusText">💎 Reklamsız Premium</div>
+        <div class="acctStatus" id="premiumStatusText"><i class="gicon" data-icon="gem"></i> Reklamsız Premium</div>
         <button class="btn small" id="premiumBuyBtn">49 TL</button>
       </div>
       <div class="acctCard" id="playGamesCard">
-        <div class="acctStatus" id="playGamesStatusText">🏆 Play Games</div>
+        <div class="acctStatus" id="playGamesStatusText"><i class="gicon" data-icon="trophy"></i> Play Games</div>
         <button class="btn alt small" id="playGamesBtn">Bağlan</button>
       </div>
     </div>
@@ -124,37 +124,37 @@
     <div class="themes" id="themeGrid"></div>
     <div class="sub" style="margin-top:4px">Orb Rengi</div>
     <div id="skinGrid"></div>
-    <button class="btn alt small" id="legalBtn">⚖️ Gizlilik &amp; Yasal</button>
-    <button class="btn alt small" data-go="menu">◀ Geri</button>
+    <button class="btn alt small" id="legalBtn"><i class="gicon" data-icon="scale"></i> Gizlilik &amp; Yasal</button>
+    <button class="btn alt small" data-go="menu"><i class="gicon" data-icon="back"></i> Geri</button>
   </div>
 
   <div class="screen" id="screen-stats">
     <h2>İstatistikler</h2>
     <div class="card">
-      <div class="row"><span class="k">🏆 En iyi skor</span><span class="v" id="stBest">0</span></div>
-      <div class="row"><span class="k">⭐ Toplam yıldız</span><span class="v" id="stStars">0</span></div>
-      <div class="row"><span class="k">🎮 Oynanan oyun</span><span class="v" id="stGames">0</span></div>
-      <div class="row"><span class="k">📈 En yüksek seviye</span><span class="v" id="stLevel">1</span></div>
+      <div class="row"><span class="k"><i class="gicon" data-icon="trophy"></i> En iyi skor</span><span class="v" id="stBest">0</span></div>
+      <div class="row"><span class="k"><i class="gicon" data-icon="star"></i> Toplam yıldız</span><span class="v" id="stStars">0</span></div>
+      <div class="row"><span class="k"><i class="gicon" data-icon="gamepad"></i> Oynanan oyun</span><span class="v" id="stGames">0</span></div>
+      <div class="row"><span class="k"><i class="gicon" data-icon="chart"></i> En yüksek seviye</span><span class="v" id="stLevel">1</span></div>
     </div>
     <div class="shopTabs" id="statsTabs">
-      <div class="stab sel" data-stat-tab="ach">🏆 Başarımlar</div>
-      <div class="stab" data-stat-tab="lb">🏅 Liderlik</div>
-      <div class="stab" data-stat-tab="league">🎯 Rakipler</div>
+      <div class="stab sel" data-stat-tab="ach"><i class="gicon" data-icon="trophy"></i> Başarımlar</div>
+      <div class="stab" data-stat-tab="lb"><i class="gicon" data-icon="medal"></i> Liderlik</div>
+      <div class="stab" data-stat-tab="league"><i class="gicon" data-icon="target"></i> Rakipler</div>
     </div>
     <div class="card" id="achCard"><b>Başarımlar (<span id="achCount">0</span>/10)</b>
       <div class="achGrid" id="achGrid"></div>
     </div>
-    <div class="card" id="lbCard" style="display:none"><b>🏅 En İyi 5</b><div id="lbList"></div></div>
-    <div class="card" id="leagueCard" style="display:none"><b>🏁 Rakipler Ligi</b><div id="leagueList"></div></div>
+    <div class="card" id="lbCard" style="display:none"><b><i class="gicon" data-icon="medal"></i> En İyi 5</b><div id="lbList"></div></div>
+    <div class="card" id="leagueCard" style="display:none"><b><i class="gicon" data-icon="flag"></i> Rakipler Ligi</b><div id="leagueList"></div></div>
     <button class="btn alt small" id="resetStats">İstatistikleri Sıfırla</button>
-    <button class="btn alt small" data-go="menu">◀ Geri</button>
+    <button class="btn alt small" data-go="menu"><i class="gicon" data-icon="back"></i> Geri</button>
   </div>
 
   <div class="screen" id="screen-shop">
-    <h2>🛒 Kozmik Mağaza</h2>
-    <div class="walletBig">🪙 <span id="shopWallet">0</span></div>
+    <h2><i class="gicon" data-icon="cart"></i> Kozmik Mağaza</h2>
+    <div class="walletBig"><i class="gicon" data-icon="coin"></i> <span id="shopWallet">0</span></div>
     <div class="muted" id="dealBanner"></div>
-    <button class="btn alt small" id="watchAdCoinsShopBtn">🎬 Reklam İzle (+25 🪙)</button>
+    <button class="btn alt small" id="watchAdCoinsShopBtn"><i class="gicon" data-icon="filmreel"></i> Reklam İzle (+25 <i class="gicon" data-icon="coin"></i>)</button>
     <div class="shopTabs" id="shopTabs">
       <div class="stab sel" data-tab="themes">Temalar</div>
       <div class="stab" data-tab="skins">Orblar</div>
@@ -164,25 +164,25 @@
       <div class="stab" data-tab="boosts">Takviyeler</div>
     </div>
     <div class="shopGrid" id="shopGrid"></div>
-    <button class="btn alt small" data-go="menu">◀ Geri</button>
+    <button class="btn alt small" data-go="menu"><i class="gicon" data-icon="back"></i> Geri</button>
   </div>
 
   <div class="screen" id="screen-battlepass">
-    <h2>🎫 Sezon Bileti</h2>
+    <h2><i class="gicon" data-icon="ticket"></i> Sezon Bileti</h2>
     <div class="sub" id="seasonXpLine">0 XP</div>
     <div class="card" id="seasonPassCard" style="text-align:center;margin-top:4px;">
-      <div id="seasonPassStatusText" style="font-weight:700;margin-bottom:10px;">🎫 Premium çizgi ile daha büyük ödüller</div>
-      <button class="btn small" id="seasonPassBuyBtn">🎫 Sezon Bileti — 29 TL</button>
+      <div id="seasonPassStatusText" style="font-weight:700;margin-bottom:10px;"><i class="gicon" data-icon="ticket"></i> Premium çizgi ile daha büyük ödüller</div>
+      <button class="btn small" id="seasonPassBuyBtn"><i class="gicon" data-icon="ticket"></i> Sezon Bileti — 29 TL</button>
     </div>
     <div class="bpGrid" id="battlepassTiers"></div>
-    <button class="btn alt small" data-go="menu">◀ Geri</button>
+    <button class="btn alt small" data-go="menu"><i class="gicon" data-icon="back"></i> Geri</button>
   </div>
 
   <div class="screen" id="screen-pause">
     <h2>Duraklatıldı</h2>
     <div class="col">
-      <button class="btn" id="resumeBtn">▶ DEVAM</button>
-      <button class="btn alt small" id="zenFinishBtn" style="display:none">🏁 Oturumu Bitir</button>
+      <button class="btn" id="resumeBtn"><i class="gicon" data-icon="play"></i> DEVAM</button>
+      <button class="btn alt small" id="zenFinishBtn" style="display:none"><i class="gicon" data-icon="flag"></i> Oturumu Bitir</button>
       <button class="btn alt small" data-go="menu">ANA MENÜ</button>
     </div>
   </div>
@@ -191,7 +191,7 @@
     <h2>💔 Son Şansın</h2>
     <div class="sub">Reklam izleyip <b>1 canla</b> devam edebilirsin.<br>(<span id="reviveCountdown">6</span> sn içinde seç)</div>
     <div class="col">
-      <button class="btn" id="reviveWatchBtn">📺 İzle ve Devam Et</button>
+      <button class="btn" id="reviveWatchBtn"><i class="gicon" data-icon="tv"></i> İzle ve Devam Et</button>
       <button class="btn alt small" id="reviveSkipBtn">Vazgeç</button>
     </div>
   </div>
@@ -201,12 +201,12 @@
     <div class="muted">SKOR</div>
     <div class="score" id="finalScore">0</div>
     <div class="muted" id="overStats">En iyi: 0 · Seviye 1</div>
-    <div class="walletBig" style="font-size:16px;padding:6px 16px;" id="coinsEarned">🪙 +0</div>
+    <div class="walletBig" style="font-size:16px;padding:6px 16px;" id="coinsEarned"><i class="gicon" data-icon="coin"></i> +0</div>
     <div class="col">
-      <button class="btn" id="retryBtn">↻ TEKRAR</button>
-      <button class="btn alt small" id="watchAdCoinsBtn">🎬 Reklam İzle (+25 🪙)</button>
+      <button class="btn" id="retryBtn"><i class="gicon" data-icon="replay"></i> TEKRAR</button>
+      <button class="btn alt small" id="watchAdCoinsBtn"><i class="gicon" data-icon="filmreel"></i> Reklam İzle (+25 <i class="gicon" data-icon="coin"></i>)</button>
       <div class="row2">
-        <button class="btn alt small" id="shareBtn">📤 Paylaş</button>
+        <button class="btn alt small" id="shareBtn"><i class="gicon" data-icon="share"></i> Paylaş</button>
         <button class="btn alt small" data-go="menu">ANA MENÜ</button>
       </div>
     </div>
@@ -221,18 +221,18 @@
     <div class="sub" style="margin:0">Satın almak istiyor musun?</div>
     <div id="pcPrice" style="font-size:18px;font-weight:800;color:#ffd28a;"></div>
     <div class="row2" style="margin-top:4px">
-      <button class="btn small" id="pcYesBtn">✅ Evet</button>
-      <button class="btn alt small" id="pcNoBtn">✖ Hayır</button>
+      <button class="btn small" id="pcYesBtn"><i class="gicon" data-icon="check"></i> Evet</button>
+      <button class="btn alt small" id="pcNoBtn"><i class="gicon" data-icon="cross"></i> Hayır</button>
     </div>
   </div>
 </div>
 
 <div id="infoPopupOverlay" style="display:none;position:fixed;inset:0;z-index:35;align-items:center;justify-content:center;background:rgba(2,3,10,.75);backdrop-filter:blur(2px);padding:20px;">
   <div class="card" style="max-width:300px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;">
-    <div style="font-size:16px;font-weight:800;">⚖️ Gizlilik &amp; Yasal</div>
-    <button class="btn alt small" id="privacyBtn">🔒 Gizlilik Politikası</button>
-    <button class="btn alt small" id="adConsentBtn">📋 Reklam Onayını Yönet</button>
-    <button class="btn alt small" id="licensesBtn">📄 Açık Kaynak Lisansları</button>
+    <div style="font-size:16px;font-weight:800;"><i class="gicon" data-icon="scale"></i> Gizlilik &amp; Yasal</div>
+    <button class="btn alt small" id="privacyBtn"><i class="gicon" data-icon="lock"></i> Gizlilik Politikası</button>
+    <button class="btn alt small" id="adConsentBtn"><i class="gicon" data-icon="clipboard"></i> Reklam Onayını Yönet</button>
+    <button class="btn alt small" id="licensesBtn"><i class="gicon" data-icon="doc"></i> Açık Kaynak Lisansları</button>
     <button class="btn small" id="infoPopupCloseBtn" style="margin-top:4px">Kapat</button>
   </div>
 </div>
@@ -242,6 +242,7 @@
 <script src="premium.js"></script>
 <script src="season-pass.js"></script>
 <script src="playgames.js"></script>
+<script src="game/icons.js"></script>
 <script src="game/data.js"></script>
 <script src="game/fx.js"></script>
 <script src="game/engine.js"></script>
