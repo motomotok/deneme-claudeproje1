@@ -14,23 +14,43 @@ function syncSettings(){
   syncPlayGamesUI();
 }
 function syncPlayGamesUI(){
-  const btn=document.getElementById('playGamesBtn'); if(!btn) return;
-  if(!window.PlayGames || !PlayGames.isNative()){ btn.style.display='none'; return; }
-  btn.style.display='inline-block';
-  btn.textContent = PlayGames.signedIn ? '🏆 Skor Tablosunu Gör' : '🏆 Play Games ile Bağlan';
+  const card=document.getElementById('playGamesCard');
+  const txt=document.getElementById('playGamesStatusText');
+  const btn=document.getElementById('playGamesBtn');
+  const row=document.getElementById('acctRow');
+  if(!card || !btn) return;
+  if(!window.PlayGames || !PlayGames.isNative()){
+    card.style.display='none';
+    if(row) row.classList.add('single');
+    return;
+  }
+  card.style.display='flex';
+  if(row) row.classList.remove('single');
+  if(PlayGames.signedIn){ txt.textContent='✅ Bağlandın!'; btn.textContent='Skor Tablosu'; }
+  else { txt.textContent='🏆 Play Games'; btn.textContent='Bağlan'; }
 }
 function syncPremiumUI(price){
   const txt=document.getElementById('premiumStatusText');
   const btn=document.getElementById('premiumBuyBtn');
   if(!txt || !btn) return;
   if(stats.premiumNoAds){
-    txt.textContent='✅ Premium aktif — reklamsız oynuyorsun!';
+    txt.textContent='✅ Premium aktif!';
     btn.style.display='none';
   } else {
-    txt.textContent='💎 Premium ile reklamsız oyna';
+    txt.textContent='💎 Reklamsız Premium';
     btn.style.display='inline-block';
-    btn.textContent='💎 Reklamsız Premium — '+(price || (window.Premium ? Premium.FALLBACK_PRICE_TEXT : '49 TL'));
+    btn.textContent=price || (window.Premium ? Premium.FALLBACK_PRICE_TEXT : '49 TL');
   }
+}
+function showLegalPopup(){ document.getElementById('infoPopupOverlay').style.display='flex'; beep(500,0.05,'sine',0.08); }
+function hideLegalPopup(){ document.getElementById('infoPopupOverlay').style.display='none'; }
+
+let statsTab='ach';
+function renderStatsTab(){
+  document.querySelectorAll('#statsTabs .stab').forEach(t=>t.classList.toggle('sel', t.dataset.statTab===statsTab));
+  document.getElementById('achCard').style.display = statsTab==='ach' ? 'block' : 'none';
+  document.getElementById('lbCard').style.display = statsTab==='lb' ? 'block' : 'none';
+  document.getElementById('leagueCard').style.display = statsTab==='league' ? 'block' : 'none';
 }
 function syncStats(){
   document.getElementById('stBest').textContent=stats.best;
@@ -40,6 +60,7 @@ function syncStats(){
   renderAchievements();
   renderLeaderboard();
   renderRivalLeague();
+  renderStatsTab();
 }
 function renderRivalLeague(){
   const el=document.getElementById('leagueList'); if(!el) return;

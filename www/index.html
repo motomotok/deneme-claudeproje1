@@ -41,11 +41,13 @@
     <div class="walletBig">🪙 <span id="menuWallet">0</span></div>
     <div class="col">
       <button class="btn" data-go="mode">▶ OYNA</button>
-      <button class="btn alt small" data-go="shop">🛒 MAĞAZA</button>
-      <button class="btn alt small" data-go="battlepass">🎫 SEZON</button>
+      <div class="menuGrid2">
+        <button class="btn alt small" data-go="shop">🛒 MAĞAZA</button>
+        <button class="btn alt small" data-go="battlepass">🎫 SEZON</button>
+        <button class="btn alt small" data-go="settings">AYARLAR</button>
+        <button class="btn alt small" data-go="stats">İSTATİSTİKLER</button>
+      </div>
       <button class="btn alt small" data-go="howto">NASIL OYNANIR</button>
-      <button class="btn alt small" data-go="settings">AYARLAR</button>
-      <button class="btn alt small" data-go="stats">İSTATİSTİKLER</button>
     </div>
     <div class="muted" id="menuBest">En iyi: 0</div>
     <div class="muted" id="questLine">🎯 Günün görevi: —</div>
@@ -100,28 +102,27 @@
 
   <div class="screen" id="screen-settings">
     <h2>Ayarlar</h2>
-    <div class="toggle">Ses <div class="sw" id="soundSw"></div></div>
-    <div class="toggle">Büyük Butonlar <div class="sw" id="bigSw"></div></div>
-    <div class="toggle">Sol El Modu <div class="sw" id="handSw"></div></div>
-    <div class="toggle">Renk Körü Dostu Simgeler <div class="sw" id="cbSw"></div></div>
-    <div class="card" id="premiumCard" style="text-align:center;margin-top:4px;">
-      <div id="premiumStatusText" style="font-weight:700;margin-bottom:10px;">💎 Premium ile reklamsız oyna</div>
-      <button class="btn small" id="premiumBuyBtn">💎 Reklamsız Premium — 49 TL</button>
+    <div class="toggleGrid">
+      <div class="toggle">Ses <div class="sw" id="soundSw"></div></div>
+      <div class="toggle">Büyük Butonlar <div class="sw" id="bigSw"></div></div>
+      <div class="toggle">Sol El Modu <div class="sw" id="handSw"></div></div>
+      <div class="toggle">Renk Körü Simgeler <div class="sw" id="cbSw"></div></div>
+    </div>
+    <div class="acctRow" id="acctRow">
+      <div class="acctCard" id="premiumCard">
+        <div class="acctStatus" id="premiumStatusText">💎 Reklamsız Premium</div>
+        <button class="btn small" id="premiumBuyBtn">49 TL</button>
+      </div>
+      <div class="acctCard" id="playGamesCard">
+        <div class="acctStatus" id="playGamesStatusText">🏆 Play Games</div>
+        <button class="btn alt small" id="playGamesBtn">Bağlan</button>
+      </div>
     </div>
     <div class="sub" style="margin-top:4px">Tema</div>
     <div class="themes" id="themeGrid"></div>
     <div class="sub" style="margin-top:4px">Orb Rengi</div>
     <div id="skinGrid"></div>
-    <div class="sub" style="margin-top:4px">Play Games</div>
-    <div class="col">
-      <button class="btn alt small" id="playGamesBtn">🏆 Play Games ile Bağlan</button>
-    </div>
-    <div class="sub" style="margin-top:4px">Gizlilik &amp; Yasal</div>
-    <div class="col">
-      <button class="btn alt small" id="privacyBtn">🔒 Gizlilik Politikası</button>
-      <button class="btn alt small" id="adConsentBtn">📋 Reklam Onayını Yönet</button>
-      <button class="btn alt small" id="licensesBtn">📄 Açık Kaynak Lisansları</button>
-    </div>
+    <button class="btn alt small" id="legalBtn">⚖️ Gizlilik &amp; Yasal</button>
     <button class="btn alt small" data-go="menu">◀ Geri</button>
   </div>
 
@@ -133,11 +134,16 @@
       <div class="row"><span class="k">🎮 Oynanan oyun</span><span class="v" id="stGames">0</span></div>
       <div class="row"><span class="k">📈 En yüksek seviye</span><span class="v" id="stLevel">1</span></div>
     </div>
-    <div class="card" id="achCard"><b>🏆 Başarımlar (<span id="achCount">0</span>/10)</b>
+    <div class="shopTabs" id="statsTabs">
+      <div class="stab sel" data-stat-tab="ach">🏆 Başarımlar</div>
+      <div class="stab" data-stat-tab="lb">🏅 Liderlik</div>
+      <div class="stab" data-stat-tab="league">🎯 Rakipler</div>
+    </div>
+    <div class="card" id="achCard"><b>Başarımlar (<span id="achCount">0</span>/10)</b>
       <div class="achGrid" id="achGrid"></div>
     </div>
-    <div class="card" id="lbCard"><b>🏅 En İyi 5</b><div id="lbList"></div></div>
-    <div class="card" id="leagueCard"><b>🏁 Rakipler Ligi</b><div id="leagueList"></div></div>
+    <div class="card" id="lbCard" style="display:none"><b>🏅 En İyi 5</b><div id="lbList"></div></div>
+    <div class="card" id="leagueCard" style="display:none"><b>🏁 Rakipler Ligi</b><div id="leagueList"></div></div>
     <button class="btn alt small" id="resetStats">İstatistikleri Sıfırla</button>
     <button class="btn alt small" data-go="menu">◀ Geri</button>
   </div>
@@ -166,7 +172,7 @@
       <div id="seasonPassStatusText" style="font-weight:700;margin-bottom:10px;">🎫 Premium çizgi ile daha büyük ödüller</div>
       <button class="btn small" id="seasonPassBuyBtn">🎫 Sezon Bileti — 29 TL</button>
     </div>
-    <div id="battlepassTiers"></div>
+    <div class="bpGrid" id="battlepassTiers"></div>
     <button class="btn alt small" data-go="menu">◀ Geri</button>
   </div>
 
@@ -216,6 +222,16 @@
       <button class="btn small" id="pcYesBtn">✅ Evet</button>
       <button class="btn alt small" id="pcNoBtn">✖ Hayır</button>
     </div>
+  </div>
+</div>
+
+<div id="infoPopupOverlay" style="display:none;position:fixed;inset:0;z-index:35;align-items:center;justify-content:center;background:rgba(2,3,10,.75);backdrop-filter:blur(2px);padding:20px;">
+  <div class="card" style="max-width:300px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;">
+    <div style="font-size:16px;font-weight:800;">⚖️ Gizlilik &amp; Yasal</div>
+    <button class="btn alt small" id="privacyBtn">🔒 Gizlilik Politikası</button>
+    <button class="btn alt small" id="adConsentBtn">📋 Reklam Onayını Yönet</button>
+    <button class="btn alt small" id="licensesBtn">📄 Açık Kaynak Lisansları</button>
+    <button class="btn small" id="infoPopupCloseBtn" style="margin-top:4px">Kapat</button>
   </div>
 </div>
 

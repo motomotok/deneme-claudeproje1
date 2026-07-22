@@ -18,8 +18,11 @@ document.querySelectorAll('.diffChip').forEach(el=>{
 });
 document.getElementById('modeStartBtn').addEventListener('click', ()=>startGame(pendingMode,pendingDiff));
 
-document.querySelectorAll('.stab').forEach(el=>{
+document.querySelectorAll('#shopTabs .stab').forEach(el=>{
   el.addEventListener('click', ()=>{ shopTab=el.dataset.tab; renderShopTab(); beep(500,0.05,'sine',0.08); });
+});
+document.querySelectorAll('#statsTabs .stab').forEach(el=>{
+  el.addEventListener('click', ()=>{ statsTab=el.dataset.statTab; renderStatsTab(); beep(500,0.05,'sine',0.08); });
 });
 
 document.querySelectorAll('[data-go]').forEach(b=>{
@@ -75,6 +78,11 @@ document.getElementById('playGamesBtn').addEventListener('click', e=>{ e.stopPro
 document.getElementById('privacyBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('privacy.html','_blank'); });
 document.getElementById('licensesBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('licenses.html','_blank'); });
 document.getElementById('adConsentBtn').addEventListener('click', e=>{ e.stopPropagation(); Ads.showPrivacyOptions(); });
+document.getElementById('legalBtn').addEventListener('click', e=>{ e.stopPropagation(); showLegalPopup(); });
+document.getElementById('infoPopupCloseBtn').addEventListener('click', e=>{ e.stopPropagation(); hideLegalPopup(); });
+document.getElementById('infoPopupOverlay').addEventListener('click', e=>{
+  if(e.target.id==='infoPopupOverlay') hideLegalPopup();
+});
 
 function applyAccessibility(){
   document.body.classList.toggle('big-ui', cfg.bigButtons);
