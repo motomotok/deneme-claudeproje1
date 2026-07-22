@@ -14,6 +14,7 @@
     "@capacitor-community/admob": "^6.2.0",
     "@capacitor/android": "^6.2.0",
     "@capacitor/core": "^6.2.0",
+    "@openforge/capacitor-game-connect": "^5.0.2",
     "cordova-plugin-purchase": "^13.18.0"
   },
   "devDependencies": {

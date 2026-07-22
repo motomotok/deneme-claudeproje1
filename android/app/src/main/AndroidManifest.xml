@@ -37,6 +37,16 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713"
         />
+
+        <!--
+          Play Games Services proje ID'si — Play Console'da "Play Games Services"
+          etkinleştirilip oyun için bir proje oluşturulduktan sonra buraya gerçek
+          proje numarası girilmeli (bkz. MOBILE_APP.md). Şu an placeholder.
+        -->
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/game_services_project_id"
+        />
     </application>
 
     <!-- Permissions -->

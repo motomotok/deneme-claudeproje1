@@ -4,4 +4,5 @@
     <string name="title_activity_main">Neon Yörünge</string>
     <string name="package_name">com.motomotok.neonyorunge</string>
     <string name="custom_url_scheme">com.motomotok.neonyorunge</string>
+    <string translatable="false" name="game_services_project_id">YOUR_GAME_SERVICES_PROJECT_ID</string>
 </resources>

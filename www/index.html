@@ -42,6 +42,7 @@
     <div class="col">
       <button class="btn" data-go="mode">▶ OYNA</button>
       <button class="btn alt small" data-go="shop">🛒 MAĞAZA</button>
+      <button class="btn alt small" data-go="battlepass">🎫 SEZON</button>
       <button class="btn alt small" data-go="howto">NASIL OYNANIR</button>
       <button class="btn alt small" data-go="settings">AYARLAR</button>
       <button class="btn alt small" data-go="stats">İSTATİSTİKLER</button>
@@ -111,6 +112,10 @@
     <div class="themes" id="themeGrid"></div>
     <div class="sub" style="margin-top:4px">Orb Rengi</div>
     <div id="skinGrid"></div>
+    <div class="sub" style="margin-top:4px">Play Games</div>
+    <div class="col">
+      <button class="btn alt small" id="playGamesBtn">🏆 Play Games ile Bağlan</button>
+    </div>
     <div class="sub" style="margin-top:4px">Gizlilik &amp; Yasal</div>
     <div class="col">
       <button class="btn alt small" id="privacyBtn">🔒 Gizlilik Politikası</button>
@@ -151,6 +156,17 @@
       <div class="stab" data-tab="boosts">Takviyeler</div>
     </div>
     <div class="shopGrid" id="shopGrid"></div>
+    <button class="btn alt small" data-go="menu">◀ Geri</button>
+  </div>
+
+  <div class="screen" id="screen-battlepass">
+    <h2>🎫 Sezon Bileti</h2>
+    <div class="sub" id="seasonXpLine">0 XP</div>
+    <div class="card" id="seasonPassCard" style="text-align:center;margin-top:4px;">
+      <div id="seasonPassStatusText" style="font-weight:700;margin-bottom:10px;">🎫 Premium çizgi ile daha büyük ödüller</div>
+      <button class="btn small" id="seasonPassBuyBtn">🎫 Sezon Bileti — 29 TL</button>
+    </div>
+    <div id="battlepassTiers"></div>
     <button class="btn alt small" data-go="menu">◀ Geri</button>
   </div>
 
@@ -206,12 +222,15 @@
 <script src="native-ads-bundle.js"></script>
 <script src="ads.js"></script>
 <script src="premium.js"></script>
+<script src="season-pass.js"></script>
+<script src="playgames.js"></script>
 <script src="game/data.js"></script>
 <script src="game/fx.js"></script>
 <script src="game/engine.js"></script>
 <script src="game/render.js"></script>
 <script src="game/screens.js"></script>
 <script src="game/shop-ui.js"></script>
+<script src="game/battlepass-ui.js"></script>
 <script src="game/input.js"></script>
 <script src="game/main.js"></script>
 </body>

@@ -182,7 +182,9 @@ function update(dt){
     }
     session.streakMax=Math.max(session.streakMax,combo);
   }
-  items=items.filter(it=>it.alive);
+  let _iw=0;
+  for(let _ir=0;_ir<items.length;_ir++){ if(items[_ir].alive) items[_iw++]=items[_ir]; }
+  items.length=_iw;
   if(items.length>30) items.splice(0, items.length-30);
 
   if(shake>0) shake*=Math.pow(0.86,dt);
@@ -245,27 +247,41 @@ function bumpCombo(){
   c.style.transform='scale(1.4)'; setTimeout(()=>c.style.transform='scale(1)',110);
 }
 
+// Değişmeyen alanlara yazmayı atlamak için son yazılan değerleri önbelleğe
+// alır — her karede (60/sn) unconditional DOM yazımı yerine, sadece
+// gerçekten değişen elemanlar güncellenir (davranış aynı, gereksiz
+// reflow/style recalculation önlenir).
+const _hud = {score:null, combo:null, level:null, lives:null, isTime:null, timer:null, pw:null, flash:null, wallet:null};
 function updateHud(){
-  document.getElementById('scoreHud').textContent=score;
-  document.getElementById('combo').textContent='x'+combo;
-  document.getElementById('levelHud').textContent=level;
-  document.getElementById('lives').textContent = mode==='zen' ? '∞' : (lives>0 ? '❤'.repeat(lives) : '');
+  if(_hud.score!==score){ document.getElementById('scoreHud').textContent=score; _hud.score=score; }
+  const comboText='x'+combo;
+  if(_hud.combo!==comboText){ document.getElementById('combo').textContent=comboText; _hud.combo=comboText; }
+  if(_hud.level!==level){ document.getElementById('levelHud').textContent=level; _hud.level=level; }
+  const livesText = mode==='zen' ? '∞' : (lives>0 ? '❤'.repeat(lives) : '');
+  if(_hud.lives!==livesText){ document.getElementById('lives').textContent=livesText; _hud.lives=livesText; }
   const isTime = mode==='time';
-  document.getElementById('timerLbl').style.display = isTime?'block':'none';
-  document.getElementById('timerHud').style.display = isTime?'block':'none';
-  document.getElementById('levelLbl').style.display = isTime?'none':'block';
-  document.getElementById('levelHud').style.display = isTime?'none':'block';
-  if(isTime) document.getElementById('timerHud').textContent = Math.ceil(timeLeft)+'s';
-  const pw=document.getElementById('pw'); let html='';
+  if(_hud.isTime!==isTime){
+    document.getElementById('timerLbl').style.display = isTime?'block':'none';
+    document.getElementById('timerHud').style.display = isTime?'block':'none';
+    document.getElementById('levelLbl').style.display = isTime?'none':'block';
+    document.getElementById('levelHud').style.display = isTime?'none':'block';
+    _hud.isTime=isTime;
+  }
+  if(isTime){
+    const timerText=Math.ceil(timeLeft)+'s';
+    if(_hud.timer!==timerText){ document.getElementById('timerHud').textContent=timerText; _hud.timer=timerText; }
+  }
+  let html='';
   if(player.shield) html+=`<div class="pwchip">🛡️</div>`;
   if(player.slowT>0) html+=chip('⏱️', player.slowT/SLOW_DUR);
   if(player.magnetT>0) html+=chip('🧲', player.magnetT/MAGNET_DUR);
   if(player.freezeT>0) html+=chip('⏳', player.freezeT/FREEZE_DUR);
   if(player.multT>0) html+=chip('💰', player.multT/MULT_DUR);
   if(player.ghostT>0) html+=chip('👻', player.ghostT/GHOST_DUR);
-  pw.innerHTML=html;
-  const lf=document.getElementById('levelFlash');
-  lf.style.opacity = levelFlashT>0 ? Math.min(1, levelFlashT/20) : 0;
-  document.getElementById('walletHud').textContent = stats.stardust||0;
+  if(_hud.pw!==html){ document.getElementById('pw').innerHTML=html; _hud.pw=html; }
+  const flashOpacity = levelFlashT>0 ? Math.min(1, levelFlashT/20) : 0;
+  if(_hud.flash!==flashOpacity){ document.getElementById('levelFlash').style.opacity=flashOpacity; _hud.flash=flashOpacity; }
+  const wallet = stats.stardust||0;
+  if(_hud.wallet!==wallet){ document.getElementById('walletHud').textContent=wallet; _hud.wallet=wallet; }
 }
 function chip(icon,frac){ return `<div class="pwchip">${icon}<div class="pwbar"><i style="width:${Math.max(0,frac)*100}%"></i></div></div>`; }

@@ -31,6 +31,7 @@ document.querySelectorAll('[data-go]').forEach(b=>{
     else if(g==='settings') goSettings();
     else if(g==='stats') goStats();
     else if(g==='shop') goShop();
+    else if(g==='battlepass') goBattlepass();
   });
 });
 document.getElementById('retryBtn').addEventListener('click', e=>{ e.stopPropagation(); startGame(); });
@@ -61,6 +62,15 @@ document.getElementById('purchaseConfirmOverlay').addEventListener('click', e=>{
 document.getElementById('premiumBuyBtn').addEventListener('click', e=>{ e.stopPropagation();
   if(window.Premium && Premium.isNative()){ Premium.purchase(); }
   else { queueToast('💎 Premium satın alma yalnızca Play Store uygulamasında kullanılabilir.'); }
+});
+document.getElementById('seasonPassBuyBtn').addEventListener('click', e=>{ e.stopPropagation();
+  if(window.SeasonPass && SeasonPass.isNative()){ SeasonPass.purchase(); }
+  else { queueToast('🎫 Sezon Bileti satın alma yalnızca Play Store uygulamasında kullanılabilir.'); }
+});
+document.getElementById('playGamesBtn').addEventListener('click', e=>{ e.stopPropagation();
+  if(!window.PlayGames || !PlayGames.isNative()){ queueToast('🏆 Play Games yalnızca Play Store uygulamasında kullanılabilir.'); return; }
+  if(PlayGames.signedIn){ PlayGames.showLeaderboard(); return; }
+  PlayGames.signIn().then(ok=>{ syncPlayGamesUI(); if(ok) queueToast('🏆 Play Games\'e bağlandın!'); else queueToast('🏆 Bağlanılamadı, tekrar dene.'); });
 });
 document.getElementById('privacyBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('privacy.html','_blank'); });
 document.getElementById('licensesBtn').addEventListener('click', e=>{ e.stopPropagation(); window.open('licenses.html','_blank'); });

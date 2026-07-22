@@ -11,6 +11,13 @@ function syncSettings(){
   document.querySelectorAll('.theme').forEach(el=>el.classList.toggle('sel', el.dataset.key===cfg.theme));
   renderSkins();
   syncPremiumUI();
+  syncPlayGamesUI();
+}
+function syncPlayGamesUI(){
+  const btn=document.getElementById('playGamesBtn'); if(!btn) return;
+  if(!window.PlayGames || !PlayGames.isNative()){ btn.style.display='none'; return; }
+  btn.style.display='inline-block';
+  btn.textContent = PlayGames.signedIn ? '🏆 Skor Tablosunu Gör' : '🏆 Play Games ile Bağlan';
 }
 function syncPremiumUI(price){
   const txt=document.getElementById('premiumStatusText');
@@ -145,6 +152,9 @@ function onShopCardClick(category, item){
         if(purchase(category,item)) setEquipped(category, item.id);
         renderSkins(); renderThemeGrid(); syncShopIfOpen();
       });
+    } else if(item.gate.type==='seasonpass'){
+      queueToast('🔒 '+item.name+' — Sezon Bileti\'nin son kademesinden açılır.');
+      beep(200,0.1,'square',0.1);
     } else {
       const ach=ACHIEVEMENTS.find(a=>a.id===item.gate.id);
       queueToast('🔒 '+item.name+' kilitli: '+(ach?ach.desc:''));
@@ -189,6 +199,8 @@ function trailDotStyle(id,i){
   if(id==='sparkle') return `background:#fff;opacity:${op*(i%2?0.5:1)};border-radius:50%;width:${6+((i*7)%5)}px;height:${6+((i*7)%5)}px;`;
   if(id==='comet') return `background:linear-gradient(90deg,var(--accent-2,#a97bff),transparent);opacity:${op};width:${16-i*2}px;height:6px;border-radius:4px;`;
   if(id==='ribbon') return `background:var(--accent-2,#a97bff);opacity:${op};border-radius:50%;width:${8-i}px;height:${8-i}px;transform:translateY(${(i%2?4:-4)}px);`;
+  if(id==='quantum') return `background:${i%2?'#7fe8ff':'var(--accent-2,#a97bff)'};opacity:${op};border-radius:50%;width:${9-i}px;height:${9-i}px;`;
+  if(id==='phantom') return `background:#eaf2ff;opacity:${op*0.5};border-radius:50%;width:${10-i}px;height:${10-i}px;`;
   return `background:var(--accent-2,#a97bff);opacity:${op};border-radius:50%;width:${9-i}px;height:${9-i}px;`;
 }
 function renderShopGrid(category){
@@ -208,6 +220,8 @@ function renderShopGrid(category){
     else if(!unlocked && item.gate.type==='achievement'){
       const ach=ACHIEVEMENTS.find(a=>a.id===item.gate.id);
       priceHtml=`<div class="price lockreq">🔒 ${ach?ach.name:''}</div>`;
+    } else if(!unlocked && item.gate.type==='seasonpass'){
+      priceHtml=`<div class="price lockreq">🎫 Sezon Ödülü</div>`;
     } else if(equipped) priceHtml=`<div class="price ok">✓ Takılı</div>`;
     else priceHtml=`<div class="price ok">Sahip</div>`;
     card.innerHTML = swatchHtml(category,item)+`<div class="cn">${item.name}</div>`+priceHtml;

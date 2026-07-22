@@ -14,7 +14,11 @@
     return !!(window.CdvPurchase && window.CdvPurchase.store);
   }
 
-  function init(onOwned, onPriceReady) {
+  // Sadece ürünü kaydeder + event handler'ları bağlar. store.initialize()
+  // ÇAĞIRMAZ — cordova-plugin-purchase tüm ürünlerin önce register edilmesini,
+  // sonra TEK bir initialize() çağrısı yapılmasını beklediği için bu çağrı
+  // main.js'de, Premium ve SeasonPass ikisi de register olduktan sonra yapılır.
+  function register(onOwned, onPriceReady) {
     if (!isAvailable()) return;
     const { store, ProductType, Platform } = window.CdvPurchase;
     store.register({ id: PRODUCT_ID, type: ProductType.NON_CONSUMABLE, platform: Platform.GOOGLE_PLAY });
@@ -27,8 +31,6 @@
     store.when().approved((transaction) => transaction.verify());
     store.when().verified((receipt) => receipt.finish());
     store.when().owned(() => { onOwned && onOwned(); });
-
-    store.initialize([Platform.GOOGLE_PLAY]).catch(() => {});
   }
 
   function purchase() {
@@ -44,5 +46,5 @@
     window.CdvPurchase.store.restorePurchases();
   }
 
-  window.Premium = { isNative: isAvailable, init, purchase, restore, FALLBACK_PRICE_TEXT };
+  window.Premium = { isNative: isAvailable, register, purchase, restore, FALLBACK_PRICE_TEXT };
 })();

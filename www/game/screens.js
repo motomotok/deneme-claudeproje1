@@ -26,6 +26,7 @@ function goSettings(){ state='settings'; setHud(false); showScreen('settings'); 
 function goStats(){ state='stats'; setHud(false); showScreen('stats'); syncStats(); }
 function goMode(){ state='mode'; setHud(false); showScreen('mode'); refreshDailyStatus(); renderBoostRow(); }
 function goShop(){ state='shop'; setHud(false); showScreen('shop'); ensureDailyDeal(); refreshWallet(); renderDealBanner(); renderShopTab(); }
+function goBattlepass(){ state='battlepass'; setHud(false); showScreen('battlepass'); renderBattlepass(); }
 
 function startGame(m,d){
   m = m || mode; d = d || diffKey;
@@ -68,8 +69,11 @@ function gameOver(reason){
   checkAchievements({runScore, level, session, mode, elapsedSec});
   const scoreBonus = Math.round(Math.floor(runScore/12)*weekendMult());
   addStardust(scoreBonus);
+  ensureSeason();
+  stats.seasonXp += Math.max(1, Math.floor(runScore/8));
   ensureRival();
   saveStats();
+  if(mode!=='zen' && window.PlayGames && PlayGames.isNative() && PlayGames.signedIn) PlayGames.submitScore(runScore);
   if(beatenRival) queueToast('🏆 '+turkishAccusative(beatenRival)+' geçtin! Yeni hedef: '+stats.rivalName+' — '+stats.rivalScore);
   let reasonText='';
   if(reason==='time') reasonText='⏰ Süre doldu · ';
